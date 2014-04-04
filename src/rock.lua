@@ -23,12 +23,12 @@ local function main()
     
     -- run
     local scene = MYTEST1:create()
-	
+
 	if cc.Director:getInstance():getRunningScene() then
-		cc.Director:getInstance():replaceScene(scene)
-	else
-		cc.Director:getInstance():runWithScene(scene)
-	end
+        cc.Director:getInstance():replaceScene(scene)
+    else
+        cc.Director:getInstance():runWithScene(scene)
+    end
 end
 
 
