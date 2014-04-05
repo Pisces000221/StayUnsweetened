@@ -46,18 +46,18 @@ function MYTEST1.create()
     label4:setColor(cc.c3b(255, 25, 25))
     scene:addChild(label4)
     -- Repeat the background
-    local bg7 = MInfBackground:create('menu1.png')
+    local bg7 = MInfBackground:createWithSpriteFrame('menu1')
     bg7:setPositionY(200)
     scene:addChild(bg7)
-    local bg8 = MInfBackground:create('menu1.png')
+    local bg8 = MInfBackground:createWithSpriteFrame('menu1')
     bg8:setPositionY(100)
     scene:addChild(bg8)
 
     local quarterHeight = visibleSize.height / 4
     local halfWidth = visibleSize.width / 2
     -- PerformanceTest.lua (1614)
-    local mr90sprite = cc.Sprite:create('farm.jpg')
-    local sprite6 = cc.Sprite:create('land.png')
+    local mr90sprite = globalSpriteFrame('farm')
+    local sprite6 = globalSpriteFrame('land')
     sprite6:setAnchorPoint(cc.p(0, 0))
     scene:addChild(sprite6)
     scene:scheduleUpdateWithPriorityLua(function(dt)

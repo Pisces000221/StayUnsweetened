@@ -43,6 +43,15 @@ err_handle:
 #endif
 }
 
+int tolua_MInfBackground_createWithSpriteFrame(lua_State *L)
+{
+    std::string framename;
+    if (!luaval_to_std_string(L, 2, &framename)) return 0;
+    M::InfBackground *obj = M::InfBackground::createWithSpriteFrame(framename);
+    tolua_pushusertype(L, obj, "MInfBackground");
+    return 1;
+}
+
 TOLUA_API int tolua_MInfBackground_open(lua_State *L)
 {
     tolua_open(L);
@@ -52,6 +61,7 @@ TOLUA_API int tolua_MInfBackground_open(lua_State *L)
         tolua_cclass(L, "MInfBackground", "MInfBackground", "cc.Layer", NULL);
         tolua_beginmodule(L, "MInfBackground");
             tolua_function(L, "create", tolua_MInfBackground_create);
+            tolua_function(L, "createWithSpriteFrame", tolua_MInfBackground_createWithSpriteFrame);
         tolua_endmodule(L);
     tolua_endmodule(L);
     return 1;

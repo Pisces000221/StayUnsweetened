@@ -1,6 +1,8 @@
 require 'Cocos2d'
 require 'src/logging'
+require 'src/global'
 require 'src/scenes/MYTEST/MYTEST1'
+require 'src/scenes/MYTEST/MYTEST2'
 
 local function main()
     -- avoid memory leak
@@ -21,6 +23,9 @@ local function main()
         cclog('UNABLE TO DEBUG UNDER THIS PLATFORM...')
     end
     
+    -- load sprite frames
+    cc.SpriteFrameCache:getInstance():addSpriteFrames('MYTEST1_2.plist')
+    --cc.SpriteFrameCache:getInstance():addSpriteFrames('TP2.plist')
     -- run
     local scene = MYTEST1:create()
 
