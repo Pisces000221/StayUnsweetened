@@ -19,11 +19,13 @@ public:
     bool init();
     CREATE_FUNC(ScrollView);
 
-    virtual void setContentSize(Size s);
     void updateSizes();
     void verticalMode() { _is_horizonal = false; updateSizes(); }
     void horizonalMode() { _is_horizonal = true; updateSizes(); }
     bool isHorizonal() { return _is_horizonal; }
+    
+    void enableTouching() { _eventDispatcher->resumeEventListenersForTarget(this); }
+    void disableTouching() { _eventDispatcher->pauseEventListenersForTarget(this); }
 
     inline void startRefreshing()
     { _is_refreshing = true; Director::getInstance()->getScheduler()->scheduleSelector(refresh_selector, this, 0, false); }
@@ -34,6 +36,7 @@ public:
 protected:
     void refresh(float dt);
     SEL_SCHEDULE refresh_selector;
+    EventListenerTouchOneByOne *_listener;
     bool _is_horizonal;
     bool _is_refreshing;
 

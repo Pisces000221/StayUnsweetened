@@ -25,9 +25,8 @@ local function main()
     
     -- load sprite frames
     cc.SpriteFrameCache:getInstance():addSpriteFrames('MYTEST1_2.plist')
-    --cc.SpriteFrameCache:getInstance():addSpriteFrames('TP2.plist')
     -- run
-    local scene = MYTEST1:create()
+    local scene = MYTEST2:create()
 
     if cc.Director:getInstance():getRunningScene() then
         cc.Director:getInstance():replaceScene(scene)

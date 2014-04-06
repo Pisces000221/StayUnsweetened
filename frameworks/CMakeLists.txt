@@ -46,10 +46,8 @@ set(GAME_SRC
   runtime-src/Classes/kineticroll/kc_linearscroll.c
   runtime-src/Classes/widgets/MScrollView.cpp
   runtime-src/Classes/actions/MoveRotate90.cpp
-  runtime-src/Classes/widgets/MInfBackground.cpp
   runtime-src/Classes/tolua/tolua_MScrollView.cpp
   runtime-src/Classes/tolua/tolua_MoveRotate90.cpp
-  runtime-src/Classes/tolua/tolua_MInfBackground.cpp
 )
 
 set(COCOS2D_ROOT ${CMAKE_SOURCE_DIR}/cocos2d-x)
