@@ -8,126 +8,70 @@
             <dict>
                 <key>frame</key>
                 <string>{{0,0},{800,800}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{800,800}}</string>
-                <key>sourceSize</key>
-                <string>{800,800}</string>
             </dict>
             <key>dog</key>
             <dict>
                 <key>frame</key>
                 <string>{{0,801},{210,95}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{210,95}}</string>
-                <key>sourceSize</key>
-                <string>{210,95}</string>
             </dict>
             <key>land</key>
             <dict>
                 <key>frame</key>
                 <string>{{801,0},{182,94}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{182,94}}</string>
-                <key>sourceSize</key>
-                <string>{182,94}</string>
             </dict>
             <key>crystal_ball_active_1</key>
             <dict>
                 <key>frame</key>
                 <string>{{801,95},{145,215}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{145,215}}</string>
-                <key>sourceSize</key>
-                <string>{145,215}</string>
             </dict>
             <key>crystal_ball_idle_1</key>
             <dict>
                 <key>frame</key>
                 <string>{{801,311},{145,215}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{145,215}}</string>
-                <key>sourceSize</key>
-                <string>{145,215}</string>
             </dict>
             <key>ground_1</key>
             <dict>
                 <key>frame</key>
                 <string>{{0,897},{130,29}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{130,29}}</string>
-                <key>sourceSize</key>
-                <string>{130,29}</string>
             </dict>
             <key>chocolate_1</key>
             <dict>
                 <key>frame</key>
                 <string>{{211,801},{72,72}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{72,72}}</string>
-                <key>sourceSize</key>
-                <string>{72,72}</string>
             </dict>
             <key>sugar_1</key>
             <dict>
                 <key>frame</key>
                 <string>{{131,897},{72,72}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{72,72}}</string>
-                <key>sourceSize</key>
-                <string>{72,72}</string>
             </dict>
             <key>menu1</key>
             <dict>
                 <key>frame</key>
                 <string>{{0,927},{71,64}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{71,64}}</string>
-                <key>sourceSize</key>
-                <string>{71,64}</string>
             </dict>
         </dict>
         <key>metadata</key>
         <dict>
             <key>format</key>
             <integer>2</integer>
-            <key>size</key>
-            <string>{1024,1024}</string>
         </dict>
     </dict>
 </plist>
