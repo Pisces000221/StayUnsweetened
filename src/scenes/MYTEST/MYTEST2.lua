@@ -10,11 +10,19 @@ MYTEST2.parallaxBGRate = {}
 MYTEST2.parallaxBGRate[1] = 0.6
 MYTEST2.parallaxBGRate[2] = 0.35
 MYTEST2.BGExtraWidth = 800
+MYTEST2.titleYPadding = 24
+MYTEST2.titleFadeDur = 0.9
 
 function MYTEST2.create()
     local scene = cc.Scene:create()
     local size = cc.Director:getInstance():getVisibleSize()
     
+    local titleSprite = globalSprite('game_title')
+    titleSprite:setAnchorPoint(cc.p(0.5, 1))
+    titleSprite:setPosition(cc.p(size.width / 2, size.height - MYTEST2.titleYPadding))
+    --titleSprite:setVisible(false)
+    titleSprite:setOpacity(0)
+    scene:addChild(titleSprite)
     local scroll = MScrollView:create()
     scroll:horizonalMode()
     scroll:setContentSize(cc.size(AMPERE.MAPSIZE, size.height))
@@ -60,10 +68,16 @@ function MYTEST2.create()
     local hideBackShowStart = function()
         back_item:setVisible(false)
         start_item:setVisible(true)
+        titleSprite:runAction(cc.Spawn:create(
+            cc.MoveBy:create(MYTEST2.titleFadeDur, cc.p(0, -MYTEST2.titleYPadding)),
+            cc.FadeIn:create(MYTEST2.titleFadeDur)))
     end
     local hideStartShowBack = function()
         back_item:setVisible(true)
         start_item:setVisible(false)
+        titleSprite:runAction(cc.Spawn:create(
+            cc.MoveBy:create(MYTEST2.titleFadeDur, cc.p(0, MYTEST2.titleYPadding)),
+            cc.FadeOut:create(MYTEST2.titleFadeDur)))
     end
     local activateCrystalBall = function()
         crystalBallActive:runAction(cc.FadeIn:create(MYTEST2.ballFadeOutDur))
@@ -100,6 +114,9 @@ function MYTEST2.create()
     local menu = cc.Menu:create(back_item, start_item)
     menu:setPosition(cc.p(0, 0))
     scene:addChild(menu)
+    
+    -- call 'back' callback initially
+    --backCallback()
     
     return scene
 end
