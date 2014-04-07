@@ -11,7 +11,6 @@ local function main()
     collectgarbage('setstepmul', 5000)
 	cc.FileUtils:getInstance():addSearchResolutionsOrder('src');
 	cc.FileUtils:getInstance():addSearchResolutionsOrder('res');
-	cc.FileUtils:getInstance():addSearchResolutionsOrder('res/MYTEST');
     
     -- support debugging
     local platform = cc.Application:getInstance():getTargetPlatform()
@@ -24,7 +23,7 @@ local function main()
     end
     
     -- load sprite frames
-    cc.SpriteFrameCache:getInstance():addSpriteFrames('MYTEST1_2.plist')
+    cc.SpriteFrameCache:getInstance():addSpriteFrames('ss.plist')
     -- run
     local scene = MYTEST2:create()
 
