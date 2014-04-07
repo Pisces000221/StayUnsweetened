@@ -3,6 +3,7 @@ require 'src/logging'
 require 'src/global'
 require 'src/scenes/MYTEST/MYTEST1'
 require 'src/scenes/MYTEST/MYTEST2'
+require 'src/scenes/StartupScene'
 
 local function main()
     -- avoid memory leak
@@ -25,7 +26,7 @@ local function main()
     -- load sprite frames
     cc.SpriteFrameCache:getInstance():addSpriteFrames('ss.plist')
     -- run
-    local scene = MYTEST2:create()
+    local scene = StartupScene:create()
 
     if cc.Director:getInstance():getRunningScene() then
         cc.Director:getInstance():replaceScene(scene)
