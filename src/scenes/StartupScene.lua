@@ -2,14 +2,13 @@ require 'Cocos2d'
 require 'src/global'
 require 'src/widgets/BackgroundRepeater'
 require 'src/widgets/SimpleMenuItemSprite'
+require 'src/scenes/Gameplay'
 
 StartupScene = {}
 StartupScene.groundYOffset = 80
 StartupScene.backToStartDur = 1.2
 StartupScene.ballFadeOutDur = 0.5
-StartupScene.parallaxBGRate = {}
-StartupScene.parallaxBGRate[1] = 0.6
-StartupScene.parallaxBGRate[2] = 0.35
+StartupScene.parallaxBGRate = { [1] = 0.6, [2] = 0.35 }
 StartupScene.BGExtraWidth = 800
 StartupScene.titleYPadding = 24
 StartupScene.titleFadeDur = 0.9
@@ -58,14 +57,13 @@ function StartupScene.create()
     scroll:addChild(crystalBallActive)
     
     -- create the menu
-    local back_item, start_item, options_item, about_item
+    local start_item, options_item, about_item
     
     local idleCrystalBall = function()
         crystalBallIdle:setOpacity(255)
         crystalBallActive:runAction(cc.FadeOut:create(StartupScene.ballFadeOutDur))
     end
-    local hideBackShowStart = function()
-        back_item:setVisible(false)
+    local showStart = function()
         start_item:setVisible(true)
         titleSprite:runAction(cc.Spawn:create(
             cc.MoveBy:create(StartupScene.titleFadeDur, cc.p(0, -StartupScene.titleYPadding)),
@@ -78,8 +76,7 @@ function StartupScene.create()
             cc.DelayTime:create(StartupScene.iconMenuActionIntv),
             menuAction:clone()))
     end
-    local hideStartShowBack = function()
-        back_item:setVisible(true)
+    local hideStart = function()
         start_item:setVisible(false)
         titleSprite:runAction(cc.Spawn:create(
             cc.MoveBy:create(StartupScene.titleFadeDur, cc.p(0, StartupScene.titleYPadding)),
@@ -108,37 +105,33 @@ function StartupScene.create()
                 cc.p(-AMPERE.MAPSIZE / 2 + size.width / 2, StartupScene.groundYOffset))),
             cc.CallFunc:create(idleCrystalBall),
             cc.DelayTime:create(StartupScene.ballFadeOutDur),
-            cc.CallFunc:create(hideBackShowStart)))
+            cc.CallFunc:create(showStart)))
     end
     local startCallback = function()
         scroll:enableTouching()
         scroll:runAction(cc.Sequence:create(
             cc.CallFunc:create(activateCrystalBall),
             cc.DelayTime:create(StartupScene.ballFadeOutDur),
-            cc.CallFunc:create(hideStartShowBack)))
+            cc.CallFunc:create(hideStart)))
+        Gameplay:boot(scene, backCallback)
     end
-    back_item = cc.MenuItemLabel:create(
-        cc.Label:createWithTTF(globalTTFConfig(30), 'GO BACK'))
-    back_item:registerScriptTapHandler(backCallback)
-    back_item:setPosition(cc.p(200, 200))
     start_item = SimpleMenuItemSprite:create('crystal_ball_idle', startCallback)
     start_item:setAnchorPoint(cc.p(0.5, 0))
     start_item:setPosition(cc.p(size.width / 2, StartupScene.groundYOffset))
     start_item:setVisible(false)
-    
     options_item = SimpleMenuItemSprite:create('options', function() end)
     options_item:setAnchorPoint(cc.p(0, 0))
     options_item:setPosition(cc.p(0, -options_item:getContentSize().height))
     about_item = SimpleMenuItemSprite:create('about', function() end)
     about_item:setAnchorPoint(cc.p(0, 0))
     about_item:setPosition(cc.p(globalImageWidth('options') + StartupScene.iconMenuPadding, -about_item:getContentSize().height))
-    local menu = cc.Menu:create(back_item, start_item, options_item, about_item)
+    local menu = cc.Menu:create(start_item, options_item, about_item)
     menu:setPosition(cc.p(0, 0))
     scene:addChild(menu)
     
     crystalBallActive:setOpacity(0)
     crystalBallIdle:setOpacity(255)
-    hideBackShowStart()
+    showStart()
     -- Let's go Lisp :)
     scroll:runAction(cc.Sequence:create(
         cc.DelayTime:create(0),     -- wait for one frame
