@@ -74,16 +74,11 @@ kc_linearscroll *kc_init()
 
 void kc_setvisiblesize(kc_linearscroll *context, float new_size)
 {
-    //context->_visiblesize = max(new_size, context->_contentsize);
     context->_visiblesize = new_size;
     if (new_size > context->_contentsize) context->_contentsize = new_size;
 }
 void kc_setcontentsize(kc_linearscroll *context, float new_size)
 {
-    /*printf("kc_setcontentsize: before v=%f, c=%f\n", context->_visiblesize, context->_contentsize);
-    context->_contentsize = new_size;
-    if (context->_visiblesize < new_size) context->_visiblesize = new_size;
-    printf("kc_setcontentsize: after v=%f, c=%f\n", context->_visiblesize, context->_contentsize);*/
     context->_contentsize = max(new_size, context->_visiblesize);
 }
 void kc_setuserdata(kc_linearscroll *context, void *data)
@@ -105,7 +100,8 @@ void kc_inittouchdata(kc_linearscroll *context, float pos)
 {
     struct timeb now;
     ftime(&now);
-    for (int i = 0; i < TOUCHES_RECORDED; i++) {
+    int i;
+    for (i = 0; i < TOUCHES_RECORDED; i++) {
         context->_ttime[i] = now;
         context->_tpos[i] = pos;
     }
