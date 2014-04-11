@@ -1,11 +1,10 @@
 require 'Cocos2d'
 require 'src/global'
+require 'src/gameplay/all_characters'
 
 Gameplay = {}
 
 function Gameplay.boot(self, parent, gameOverCallback)
-    --local gameOver = function() end
-    -- will be implemented at the end of this function
     local menu
     -- We have to implement this here
     -- 'Cause if not, our lovely registerScriptTapHandler will raise an error.
@@ -21,4 +20,8 @@ function Gameplay.boot(self, parent, gameOverCallback)
     menu = cc.Menu:create(back_item)
     menu:setPosition(cc.p(0, 0))
     parent:addChild(menu)
+    
+    local cho = SUCROSE.create('chocolate', false)
+    cho:setPosition(cc.p(0, 100))
+    parent:addChild(cho)
 end
