@@ -5,7 +5,6 @@ require 'src/widgets/SimpleMenuItemSprite'
 require 'src/scenes/Gameplay'
 
 StartupScene = {}
-StartupScene.groundYOffset = 80
 StartupScene.backToStartDur = 1.2
 StartupScene.ballFadeOutDur = 0.5
 StartupScene.parallaxBGRate = { [1] = 0.6, [2] = 0.35 }
@@ -29,13 +28,12 @@ function StartupScene.create()
     local scroll = MScrollView:create()
     scroll:horizonalMode()
     scroll:setContentSize(cc.size(AMPERE.MAPSIZE, size.height))
-    scroll:setPosition(cc.p(-AMPERE.MAPSIZE / 2 + size.width / 2, StartupScene.groundYOffset))
-    scene:addChild(scroll)
-    local ground_bg = BackgroundRepeater:create(AMPERE.MAPSIZE + StartupScene.BGExtraWidth * 2, 'ground')
-    ground_bg:setPositionX(-StartupScene.BGExtraWidth)
+    scroll:setPositionX(-AMPERE.MAPSIZE / 2 + size.width / 2)
+    scene:addChild(scroll, 0, Gameplay.scrollTag)
+    local ground_bg = BackgroundRepeater:create(AMPERE.MAPSIZE + StartupScene.BGExtraWidth * 2, 'ground', cc.p(0, 1))
+    ground_bg:setPosition(cc.p(-StartupScene.BGExtraWidth, Gameplay.groundYOffset))
     local parallax_bg = cc.ParallaxNode:create()
-    parallax_bg:setPosition(cc.p(0, StartupScene.groundYOffset))
-    parallax_bg:setPositionX(-StartupScene.BGExtraWidth)
+    parallax_bg:setPosition(cc.p(-StartupScene.BGExtraWidth, Gameplay.groundYOffset * 2))
     for i = 1, #StartupScene.parallaxBGRate do
         parallax_bg:addChild(BackgroundRepeater:create(
             AMPERE.MAPSIZE + StartupScene.BGExtraWidth * 2, 'parallax_bg_' .. i, cc.p(0, 0)),
@@ -48,9 +46,9 @@ function StartupScene.create()
     local crystalBallActive = globalSprite('crystal_ball_active')
     local crystalBallIdle = globalSprite('crystal_ball_idle')
     crystalBallActive:setAnchorPoint(cc.p(0.5, 0))
-    crystalBallActive:setPosition(cc.p(AMPERE.MAPSIZE / 2, 0))
+    crystalBallActive:setPosition(cc.p(AMPERE.MAPSIZE / 2, Gameplay.groundYOffset))
     crystalBallIdle:setAnchorPoint(cc.p(0.5, 0))
-    crystalBallIdle:setPosition(cc.p(AMPERE.MAPSIZE / 2, 0))
+    crystalBallIdle:setPosition(cc.p(AMPERE.MAPSIZE / 2, Gameplay.groundYOffset))
     crystalBallIdle:setOpacity(0)
     -- avtive covers idle, just fade active out to set the ball to idle status
     scroll:addChild(crystalBallIdle)
@@ -102,7 +100,7 @@ function StartupScene.create()
         scroll:runAction(cc.Sequence:create(
             cc.EaseSineOut:create(cc.MoveTo:create(
                 StartupScene.backToStartDur,
-                cc.p(-AMPERE.MAPSIZE / 2 + size.width / 2, StartupScene.groundYOffset))),
+                cc.p(-AMPERE.MAPSIZE / 2 + size.width / 2, 0))),
             cc.CallFunc:create(idleCrystalBall),
             cc.DelayTime:create(StartupScene.ballFadeOutDur),
             cc.CallFunc:create(showStart)))
@@ -117,7 +115,7 @@ function StartupScene.create()
     end
     start_item = SimpleMenuItemSprite:create('crystal_ball_idle', startCallback)
     start_item:setAnchorPoint(cc.p(0.5, 0))
-    start_item:setPosition(cc.p(size.width / 2, StartupScene.groundYOffset))
+    start_item:setPosition(cc.p(size.width / 2, Gameplay.groundYOffset))
     start_item:setVisible(false)
     options_item = SimpleMenuItemSprite:create('options', function() end)
     options_item:setAnchorPoint(cc.p(0, 0))

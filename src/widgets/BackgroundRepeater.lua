@@ -12,7 +12,7 @@ function BackgroundRepeater.create(self, width, frame, anchor)
     local curp = 0
     while curp < width do
         local sprite = globalSprite(frame)
-        if math.random(2) == 1 then sprite:setFlipX(true) end
+        if math.random(2) == 1 then sprite:setFlippedX(true) end
         sprite:setAnchorPoint(anchor)
         sprite:setPosition(cc.p(curp, 0))
         layer:addChild(sprite)
