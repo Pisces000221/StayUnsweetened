@@ -23,9 +23,6 @@ function Gameplay.boot(self, parent, gameOverCallback)
         pause_item:runAction(cc.EaseElasticIn:create(
             cc.MoveBy:create(Gameplay.pauseMenuGetOutDur,
             cc.p(0, pause_item:getContentSize().height + Gameplay.pauseButtonPadding.y)), 0.8))
-        --parent:getScheduler():scheduleSelector(
-        --    function() menu:removeFromParent() end,
-        --    parent, 0, 0, Gameplay.menuRemoveDelay)
         menu:runAction(cc.Sequence:create(
             cc.DelayTime:create(Gameplay.menuRemoveDelay),
             cc.CallFunc:create(function() menu:removeFromParent() end)))
@@ -56,6 +53,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     pause_item:setAnchorPoint(cc.p(0, 1))
     pause_item:setPosition(cc.p(Gameplay.pauseButtonPadding.x,
         size.height - Gameplay.pauseButtonPadding.y))
+    pause_item:setOpacity(PausingScene.iconOpacity)
     menu = cc.Menu:create(back_item, pause_item)
     menu:setPosition(cc.p(0, 0))
     parent:addChild(menu)

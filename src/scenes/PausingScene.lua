@@ -2,9 +2,10 @@ require 'Cocos2d'
 require 'src/global'
 
 PausingScene = {}
-PausingScene.iconScale = 4
-PausingScene.iconOpacity = 216
-PausingScene.iconScaleDur = 0.2
+PausingScene.iconFadeDur = 0.2
+PausingScene.iconOpacity = 128
+PausingScene.iconTintDur = 1.5
+PausingScene.iconTintWhite = 192
 PausingScene.backgroundTintDur = 0.2
 PausingScene.backgroundTintWhite = 128
 PausingScene.tapMaxDur = 0.7
@@ -34,9 +35,11 @@ function PausingScene.create(self, anchor, pos)
     icon:setAnchorPoint(anchor)
     icon:setPosition(pos)
     scene:addChild(icon)
-    icon:runAction(cc.EaseSineOut:create(cc.Spawn:create(
-        cc.ScaleTo:create(PausingScene.iconScaleDur, PausingScene.iconScale),
-        cc.FadeTo:create(PausingScene.iconScaleDur, PausingScene.iconOpacity)
+    icon:setColor(cc.c3b(PausingScene.iconTintWhite, PausingScene.iconTintWhite, PausingScene.iconTintWhite))
+    icon:runAction(cc.RepeatForever:create(cc.Sequence:create(
+        cc.TintTo:create(PausingScene.iconTintDur, 255, 255, 255),
+        cc.TintTo:create(PausingScene.iconTintDur, PausingScene.iconTintWhite,
+            PausingScene.iconTintWhite, PausingScene.iconTintWhite)
     )))
     
     -- hello.lua (132)
@@ -46,25 +49,20 @@ function PausingScene.create(self, anchor, pos)
         lastTouchBegan = os.time()
         return true
     end
-    local function onTouchMoved(touch, event)
-    end
     local function onTouchEnded(touch, event)
         if os.time() - lastTouchBegan <= PausingScene.tapMaxDur then
             bgSprite:runAction(cc.TintTo:create(
                 PausingScene.backgroundTintDur, 255, 255, 255))
-            icon:runAction(cc.EaseSineIn:create(cc.Spawn:create(
-                cc.ScaleTo:create(PausingScene.iconScaleDur, 1),
-                cc.FadeTo:create(PausingScene.iconScaleDur, 255)
-            )))
+            icon:runAction(cc.EaseSineIn:create(
+                cc.FadeTo:create(PausingScene.iconFadeDur, PausingScene.iconOpacity)))
             scene:runAction(cc.Sequence:create(
-                cc.DelayTime:create(math.max(PausingScene.backgroundTintDur, PausingScene.iconScaleDur)),
+                cc.DelayTime:create(PausingScene.backgroundTintDur),
                 cc.CallFunc:create(function()
                     cc.Director:getInstance():popScene() end)))
         end
     end
     local listener = cc.EventListenerTouchOneByOne:create()
     listener:registerScriptHandler(onTouchBegan, cc.Handler.EVENT_TOUCH_BEGAN)
-    listener:registerScriptHandler(onTouchMoved, cc.Handler.EVENT_TOUCH_MOVED)
     listener:registerScriptHandler(onTouchEnded, cc.Handler.EVENT_TOUCH_ENDED)
     local eventDispatcher = scene:getEventDispatcher()
     eventDispatcher:addEventListenerWithSceneGraphPriority(listener, scene)
