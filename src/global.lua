@@ -6,7 +6,8 @@ RES = {
 }
 
 AMPERE = {
-    MAPSIZE = 3200
+    MAPSIZE = 3200,
+    BALLWIDTH = 194
 }
 
 function globalSprite(frameName)

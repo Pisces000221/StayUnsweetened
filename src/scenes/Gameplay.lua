@@ -18,6 +18,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local menu, pause_item
     local scroll = parent:getChildByTag(Gameplay.scrollTag)
     local enemies = set.new()
+    local cho
     -- We have to implement this here
     -- 'Cause if not, our lovely registerScriptTapHandler will raise an error.
     local gameOver = function()
@@ -29,11 +30,15 @@ function Gameplay.boot(self, parent, gameOverCallback)
             cc.CallFunc:create(function() menu:removeFromParent() end)))
         while #enemies > 0 do
             local e = enemies:pop()
-            local dx = math.random(size.width / 3) + size.width
-            if e.UNIT:position() < AMPERE.MAPSIZE / 2 then dx = -dx end
-            e:runAction(cc.Sequence:create(
-                cc.MoveBy:create(1, cc.p(dx, 0)),
-                cc.CallFunc:create(function() e:removeFromParent() end)))
+            if e.UNIT.reachedBall then
+                e:stopAllActions()
+            else
+                local dx = math.random(size.width / 3) + size.width
+                if e.UNIT:position() < AMPERE.MAPSIZE / 2 then dx = -dx end
+                e:runAction(cc.Sequence:create(
+                    cc.MoveBy:create(1, cc.p(dx, 0)),
+                    cc.CallFunc:create(function() e:removeFromParent() end)))
+            end
         end
         gameOverCallback()
     end
@@ -43,6 +48,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
         cc.Director:getInstance():pushScene(PausingScene:create(
             pause_item:getAnchorPoint(), cc.p(pix, piy),
             function(choseToRestart) if choseToRestart then gameOver() end end))
+        cclog('chocolate position: %d', cho.UNIT:position())
     end
 
     local back_item = cc.MenuItemLabel:create(
@@ -58,10 +64,25 @@ function Gameplay.boot(self, parent, gameOverCallback)
     menu:setPosition(cc.p(0, 0))
     parent:addChild(menu)
     
-    local cho = SUCROSE.create('chocolate', false)
-    cho:setPosition(cc.p(AMPERE.MAPSIZE / 2, Gameplay.groundYOffset + cho.imageRadius))
+    cho = SUCROSE.create('chocolate', false)
+    cho:setPosition(cc.p(AMPERE.MAPSIZE / 3, Gameplay.groundYOffset + cho.imageRadius))
     enemies:append(cho)
     scroll:addChild(cho)
+    
+    local tick = function()
+        --cclog(#enemies)
+        for i = 1, #enemies do
+            local p = enemies[i].UNIT:position()
+            --cclog(p)
+            if enemies[i].UNIT.isGoingLeft and p < (AMPERE.MAPSIZE + AMPERE.BALLWIDTH) / 2
+              or p > (AMPERE.MAPSIZE - AMPERE.BALLWIDTH) / 2 then
+                enemies[i].UNIT.reachedBall = true
+                gameOver()
+            end
+        end
+    end
+    -- hello.lua (75)
+    parent:getScheduler():scheduleScriptFunc(tick, 0, false)
     
     WaveToast:show(parent, 1)
 end
