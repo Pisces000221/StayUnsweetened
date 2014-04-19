@@ -8,5 +8,6 @@ require 'src/gameplay/characters/chocolate'
 SUCROSE.create = function(name, isGoingLeft)
     isGoingLeft = isGoingLeft or false
     local ret = SUCROSE[name]:create(isGoingLeft)
+    ret.UNIT.position = function(self) return ret:getPositionX() end
     return ret
 end

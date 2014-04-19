@@ -74,24 +74,31 @@
                 <key>rotated</key>
                 <false/>
             </dict>
-            <key>about</key>
+            <key>restart</key>
             <dict>
                 <key>frame</key>
-                <string>{{807,109},{72,72}}</string>
+                <string>{{807,109},{96,96}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
-            <key>options</key>
+            <key>about</key>
             <dict>
                 <key>frame</key>
                 <string>{{916,0},{72,72}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
+            <key>options</key>
+            <dict>
+                <key>frame</key>
+                <string>{{667,290},{72,72}}</string>
+                <key>rotated</key>
+                <false/>
+            </dict>
             <key>cane</key>
             <dict>
                 <key>frame</key>
-                <string>{{667,290},{60,142}}</string>
+                <string>{{916,73},{60,142}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>

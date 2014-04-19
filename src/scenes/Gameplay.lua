@@ -29,7 +29,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
         while #enemies > 0 do
             local e = enemies:pop()
             local dx = math.random(size.width / 3) + size.width
-            if math.random(2) == 1 then dx = -dx end
+            if e.UNIT:position() < AMPERE.MAPSIZE / 2 then dx = -dx end
             e:runAction(cc.Sequence:create(
                 cc.MoveBy:create(1, cc.p(dx, 0)),
                 cc.CallFunc:create(function() e:removeFromParent() end)))
@@ -38,11 +38,10 @@ function Gameplay.boot(self, parent, gameOverCallback)
     end
     
     local pauseCallback = function()
-        pause_item:setVisible(false)
         local pix, piy = pause_item:getPosition()
         cc.Director:getInstance():pushScene(PausingScene:create(
-            pause_item:getAnchorPoint(), cc.p(pix, piy)))
-        pause_item:setVisible(true)
+            pause_item:getAnchorPoint(), cc.p(pix, piy),
+            function(choseToRestart) if choseToRestart then gameOver() end end))
     end
 
     local back_item = cc.MenuItemLabel:create(
