@@ -3,6 +3,7 @@ require 'src/global'
 require 'src/gameplay/all_characters'
 require 'src/data/set'
 require 'src/widgets/SimpleMenuItemSprite'
+require 'src/widgets/WaveToast'
 require 'src/scenes/PausingScene'
 
 Gameplay = {}
@@ -61,4 +62,6 @@ function Gameplay.boot(self, parent, gameOverCallback)
     cho:setPosition(cc.p(AMPERE.MAPSIZE / 2, Gameplay.groundYOffset + cho.imageRadius))
     enemies:append(cho)
     scroll:addChild(cho)
+    
+    WaveToast:show(parent, 1)
 end
