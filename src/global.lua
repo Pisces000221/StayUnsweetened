@@ -7,6 +7,7 @@ RES = {
 
 AMPERE = {
     MAPSIZE = 3200,
+    EXTRAMAPSIZE = 200,
     BALLWIDTH = 194
 }
 

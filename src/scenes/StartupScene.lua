@@ -39,8 +39,8 @@ function StartupScene.create()
             AMPERE.MAPSIZE + StartupScene.BGExtraWidth * 2, 'parallax_bg_' .. i, cc.p(0, 0)),
             i, cc.p(StartupScene.parallaxBGRate[i], 0.5), cc.p(0, 0))
     end
-    scroll:addChild(parallax_bg)
-    scroll:addChild(ground_bg)
+    scroll:addChild(parallax_bg, 20)
+    scroll:addChild(ground_bg, 20)
     
     -- create the crystal ball
     local crystalBallActive = globalSprite('crystal_ball_active')
@@ -51,8 +51,8 @@ function StartupScene.create()
     crystalBallIdle:setPosition(cc.p(AMPERE.MAPSIZE / 2, Gameplay.groundYOffset))
     crystalBallIdle:setOpacity(0)
     -- avtive covers idle, just fade active out to set the ball to idle status
-    scroll:addChild(crystalBallIdle)
-    scroll:addChild(crystalBallActive)
+    scroll:addChild(crystalBallIdle, 40)
+    scroll:addChild(crystalBallActive, 40)
     
     -- create the menu
     local start_item, options_item, about_item
@@ -117,15 +117,18 @@ function StartupScene.create()
     start_item:setAnchorPoint(cc.p(0.5, 0))
     start_item:setPosition(cc.p(size.width / 2, Gameplay.groundYOffset))
     start_item:setVisible(false)
+    local start_menu = cc.Menu:create(start_item)
+    start_menu:setPosition(cc.p(0, 0))
+    scene:addChild(start_menu)
     options_item = SimpleMenuItemSprite:create('options', function() end)
     options_item:setAnchorPoint(cc.p(0, 0))
     options_item:setPosition(cc.p(0, -options_item:getContentSize().height))
     about_item = SimpleMenuItemSprite:create('about', function() end)
     about_item:setAnchorPoint(cc.p(0, 0))
     about_item:setPosition(cc.p(globalImageWidth('options') + StartupScene.iconMenuPadding, -about_item:getContentSize().height))
-    local menu = cc.Menu:create(start_item, options_item, about_item)
-    menu:setPosition(cc.p(0, 0))
-    scene:addChild(menu)
+    local icon_menu = cc.Menu:create(options_item, about_item)
+    icon_menu:setPosition(cc.p(0, 0))
+    scene:addChild(icon_menu)
     
     crystalBallActive:setOpacity(0)
     crystalBallIdle:setOpacity(255)
