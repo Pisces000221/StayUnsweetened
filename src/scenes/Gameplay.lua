@@ -99,16 +99,12 @@ function Gameplay.boot(self, parent, gameOverCallback)
             function(choseToRestart) if choseToRestart then gameOver() end end))
     end
 
-    local back_item = cc.MenuItemLabel:create(
-        cc.Label:createWithTTF(globalTTFConfig(30), 'GO BACK'))
-    back_item:registerScriptTapHandler(gameOver)
-    back_item:setPosition(cc.p(200, 200))
     pause_item = SimpleMenuItemSprite:create('pause', pauseCallback)
     pause_item:setAnchorPoint(cc.p(0, 1))
     pause_item:setPosition(cc.p(Gameplay.pauseButtonPadding.x,
         size.height - Gameplay.pauseButtonPadding.y))
     pause_item:setOpacity(PausingScene.iconOpacity)
-    menu = cc.Menu:create(back_item, pause_item)
+    menu = cc.Menu:create(pause_item)
     menu:setPosition(cc.p(0, 0))
     parent:addChild(menu)
     
