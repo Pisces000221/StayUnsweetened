@@ -65,6 +65,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local enemies = set.new()
     local props = set.new()
     local tickScheduleEntry = 0
+    local tick
     enableScheduleOnce()
     -- We have to implement this here
     -- 'Cause if not, our lovely registerScriptTapHandler will raise an error.
@@ -109,7 +110,11 @@ function Gameplay.boot(self, parent, gameOverCallback)
         local pix, piy = pause_item:getPosition()
         cc.Director:getInstance():pushScene(PausingScene:create(
             pause_item:getAnchorPoint(), cc.p(pix, piy),
-            function(choseToRestart) if choseToRestart then gameOver() end end))
+            function(choseToRestart)
+                if choseToRestart then gameOver() end
+                tickScheduleEntry = parent:getScheduler():scheduleScriptFunc(tick, 0, false)
+            end))
+        parent:getScheduler():unscheduleScriptEntry(tickScheduleEntry)
     end
 
     pause_item = SimpleMenuItemSprite:create('pause', pauseCallback)
@@ -121,17 +126,39 @@ function Gameplay.boot(self, parent, gameOverCallback)
     menu:setPosition(cc.p(0, 0))
     parent:addChild(menu)
     
-    local tick = function()
+    tick = function(dt)
         for i = 1, #enemies do
             local p = enemies[i].UNIT:position()
-            if enemies[i].UNIT.isGoingLeft and p < (AMPERE.MAPSIZE + AMPERE.BALLWIDTH) / 2
-              or  not enemies[i].UNIT.isGoingLeft and p > (AMPERE.MAPSIZE - AMPERE.BALLWIDTH) / 2 then
-                enemies[i].UNIT.reachedBall = true
+            local eu = enemies[i].UNIT
+            if eu.isGoingLeft and p < (AMPERE.MAPSIZE + AMPERE.BALLWIDTH) / 2
+              or not eu.isGoingLeft and p > (AMPERE.MAPSIZE - AMPERE.BALLWIDTH) / 2 then
+                eu.reachedBall = true
                 print('reacher isgoingleft: ', enemies[i].UNIT.isGoingLeft)
                 print('reacher position: ', p)
                 gameOver()
             end
+            for i = 1, #props do
+                local pr = props[i]
+                local f = pr.UNIT:getForceForPosition(p, FORCE_HEAT) * dt
+                if f > 0 then eu:damage(eu.multiplier[FORCE_HEAT] * f) end
+                f = pr.UNIT:getForceForPosition(p, FORCE_FLOOD) * dt
+                if f > 0 then eu:damage(eu.multiplier[FORCE_FLOOD] * f) end
+            end
+            if eu.HP <= 0 then
+                enemies[i]:runAction(cc.FadeOut:create(1))
+                enemies:remove(i)
+                -- debug-use only: display score
+                local scoreLabel = cc.Label:createWithTTF(globalTTFConfig(36), '+' .. eu.bonus)
+                scoreLabel:setPosition(cc.p(p, 280))
+                scroll:addChild(scoreLabel, 1024)
+                scoreLabel:runAction(cc.Sequence:create(cc.Spawn:create(
+                    cc.EaseSineOut:create(cc.MoveBy:create(0.8, cc.p(0, 90))),
+                    cc.FadeOut:create(1.8)),
+                    cc.CallFunc:create(function() scoreLabel:removeFromParent() end)))
+                i = i - 1
+            end
         end
+        for i = 1, #props do props[i].UNIT:update(dt) end
     end
     -- hello.lua (75)
     tickScheduleEntry = parent:getScheduler():scheduleScriptFunc(tick, 0, false)
@@ -173,8 +200,12 @@ function Gameplay.boot(self, parent, gameOverCallback)
     createOneEnemy()
     
     ---- ==== For debug use only ==== ----
-    local torch = PROPS.create('torch')
-    torch:setPosition(posForCharacter(torch, AMPERE.MAPSIZE / 2 + 200))
-    props:append(torch)
-    scroll:addChild(torch, 80)
+    local t1 = PROPS.create('torch')
+    t1:setPosition(posForCharacter(t1, 250))
+    props:append(t1)
+    scroll:addChild(t1, 80)
+    local t2 = PROPS.create('torch')
+    t2:setPosition(posForCharacter(t2, 500))
+    props:append(t2)
+    scroll:addChild(t2, 80)
 end

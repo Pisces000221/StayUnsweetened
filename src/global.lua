@@ -43,3 +43,10 @@ function globalTTFConfig(fontSize, isBold)
     ttfConfig.distanceFieldEnabled = true
     return ttfConfig
 end
+
+-- http://stackoverflow.com/questions/640642/how-do-you-copy-a-lua-table-by-value
+function table.shallow_copy(t)
+  local r = {}
+  for k, v in pairs(t) do r[k] = v end
+  return r
+end

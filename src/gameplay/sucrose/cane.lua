@@ -7,6 +7,9 @@ SUCROSE['cane'] = {
     charID = 2,
     spriteFrame = 'cane',
     velocity = 100,
+    maxHP = 1000,
+    multiplier = { [FORCE_HEAT] = 1, [FORCE_FLOOD] = 1 },
+    bonus = 15,
     actionTimeRate = 0.6,   -- 60% of time, the sprite is animated
     jumpHeight = 80,
     create = function(self, isGoingLeft)

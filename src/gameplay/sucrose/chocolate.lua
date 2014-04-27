@@ -7,6 +7,9 @@ SUCROSE['chocolate'] = {
     charID = 1,
     spriteFrame = 'chocolate',
     velocity = 100,
+    maxHP = 1200,
+    multiplier = { [FORCE_HEAT] = 1, [FORCE_FLOOD] = 1 },
+    bonus = 15,
     create = function(self)
         local ret = globalSprite(self.spriteFrame)
         ret.UNIT = {}
