@@ -19,7 +19,6 @@ Gameplay.jumpHeight = 100
 Gameplay.reacherFadeOutDur = 0.5
 Gameplay.reacherJumpCount = 9
 Gameplay.reacherYMoveSpeed = 120
---Gameplay.propFadeOutDur = 0.5
 
 local function posForCharacter(ch, x)
     return cc.p(x, Gameplay.groundYOffset + ch:getAnchorPointInPoints().y)
@@ -81,7 +80,6 @@ function Gameplay.boot(self, parent, gameOverCallback)
         while #props > 0 do
             local p = props:pop()
             p:runAction(cc.Sequence:create(
-                --cc.FadeOut:create(Gameplay.propFadeOutDur),
                 cc.DelayTime:create(p:destroy()),
                 cc.CallFunc:create(function() p:removeFromParent() end)))
         end

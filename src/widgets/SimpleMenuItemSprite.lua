@@ -5,7 +5,7 @@ SimpleMenuItemSprite = {}
 
 function SimpleMenuItemSprite.create(self, frame, callback)
     local selSprite = globalSprite(frame)
-    selSprite:setColor(cc.c3b(128, 128, 128))
+    selSprite:setColor(cc.c3b(192, 192, 192))
     local item = cc.MenuItemSprite:create(globalSprite(frame), selSprite)
     item:registerScriptTapHandler(callback)
     return item
