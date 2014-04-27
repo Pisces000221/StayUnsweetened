@@ -60,7 +60,7 @@
                 <key>rotated</key>
                 <false/>
             </dict>
-            <key>sugar</key>
+            <key>cube</key>
             <dict>
                 <key>frame</key>
                 <string>{{698,181},{108,108}}</string>
@@ -99,6 +99,13 @@
             <dict>
                 <key>frame</key>
                 <string>{{916,73},{60,142}}</string>
+                <key>rotated</key>
+                <false/>
+            </dict>
+            <key>torch_body</key>
+            <dict>
+                <key>frame</key>
+                <string>{{989,0},{18,156}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>

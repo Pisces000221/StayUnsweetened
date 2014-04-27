@@ -19,6 +19,14 @@ Gameplay.jumpHeight = 100
 Gameplay.reacherFadeOutDur = 0.5
 Gameplay.reacherJumpCount = 9
 Gameplay.reacherYMoveSpeed = 120
+--Gameplay.propFadeOutDur = 0.5
+
+local function posForCharacter(ch, x)
+    return cc.p(x, Gameplay.groundYOffset + ch:getAnchorPointInPoints().y)
+end
+local function posYForCharacter(ch, x)
+    return Gameplay.groundYOffset + ch:getAnchorPointInPoints().y
+end
 
 local isScheduleOnceEnabled = true
 local scheduleOnceEntries = {}
@@ -56,6 +64,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local menu, pause_item
     local scroll = parent:getChildByTag(Gameplay.scrollTag)
     local enemies = set.new()
+    local props = set.new()
     local tickScheduleEntry = 0
     enableScheduleOnce()
     -- We have to implement this here
@@ -69,12 +78,18 @@ function Gameplay.boot(self, parent, gameOverCallback)
         menu:runAction(cc.Sequence:create(
             cc.DelayTime:create(Gameplay.menuRemoveDelay),
             cc.CallFunc:create(function() menu:removeFromParent() end)))
+        while #props > 0 do
+            local p = props:pop()
+            p:runAction(cc.Sequence:create(
+                --cc.FadeOut:create(Gameplay.propFadeOutDur),
+                cc.DelayTime:create(p:destroy()),
+                cc.CallFunc:create(function() p:removeFromParent() end)))
+        end
         while #enemies > 0 do
             local e = enemies:pop()
             if e.UNIT.reachedBall then
                 e:stopAllActions()
-                local deltaY = e:getPositionY()
-                    - e:getAnchorPointInPoints().y - Gameplay.groundYOffset
+                local deltaY = e:getPositionY() - posYForCharacter(e)
                 e:runAction(cc.Sequence:create(
                     cc.MoveBy:create(deltaY / Gameplay.reacherYMoveSpeed, cc.p(0, -deltaY)),
                     cc.JumpBy:create(Gameplay.jumpDur, cc.p(0, 0), Gameplay.jumpHeight, Gameplay.reacherJumpCount),
@@ -143,7 +158,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
         local e = SUCROSE.create(enemyName, isGoingLeft)
         local p0 = -AMPERE.EXTRAMAPSIZE
         if isGoingLeft then p0 = AMPERE.MAPSIZE + AMPERE.EXTRAMAPSIZE end
-        e:setPosition(cc.p(p0, Gameplay.groundYOffset + e:getAnchorPointInPoints().y))
+        e:setPosition(posForCharacter(e, p0))
         enemies:append(e)
         scroll:addChild(e, 90)
         -- Update wave data (how many remaining)
@@ -158,4 +173,10 @@ function Gameplay.boot(self, parent, gameOverCallback)
         scheduleOnce(parent, createOneEnemy, AMPERE.WAVES.delay[enemyType])
     end
     createOneEnemy()
+    
+    ---- ==== For debug use only ==== ----
+    local torch = PROPS.create('torch')
+    torch:setPosition(posForCharacter(torch, AMPERE.MAPSIZE / 2 + 200))
+    props:append(torch)
+    scroll:addChild(torch, 80)
 end

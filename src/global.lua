@@ -23,6 +23,15 @@ function globalImageWidth(frameName)
         :getSpriteFrame(frameName):getRect().width;
 end
 
+function globalImageHeight(frameName)
+    return cc.SpriteFrameCache:getInstance()
+        :getSpriteFrame(frameName):getRect().height;
+end
+
+function globalImageRect(frameName)
+    return cc.SpriteFrameCache:getInstance():getSpriteFrame(frameName):getRect()
+end
+
 function globalTTFConfig(fontSize, isBold)
     isBold = isBold or false
     local ttfConfig = {}
