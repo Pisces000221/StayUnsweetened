@@ -148,12 +148,12 @@ function Gameplay.boot(self, parent, gameOverCallback)
                 enemies[i]:runAction(cc.FadeOut:create(1))
                 enemies:remove(i)
                 -- debug-use only: display score
-                local scoreLabel = cc.Label:createWithTTF(globalTTFConfig(36), '+' .. eu.bonus)
+                local scoreLabel = cc.Label:createWithTTF(globalTTFConfig(36), eu.name)
                 scoreLabel:setPosition(cc.p(p, 280))
                 scroll:addChild(scoreLabel, 1024)
                 scoreLabel:runAction(cc.Sequence:create(cc.Spawn:create(
-                    cc.EaseSineOut:create(cc.MoveBy:create(0.8, cc.p(0, 90))),
-                    cc.FadeOut:create(1.8)),
+                    cc.EaseSineOut:create(cc.MoveBy:create(1.4, cc.p(0, 60))),
+                    cc.FadeOut:create(2)),
                     cc.CallFunc:create(function() scoreLabel:removeFromParent() end)))
                 i = i - 1
             end
@@ -208,4 +208,12 @@ function Gameplay.boot(self, parent, gameOverCallback)
     t2:setPosition(posForCharacter(t2, 500))
     props:append(t2)
     scroll:addChild(t2, 80)
+    local t3 = PROPS.create('torch')
+    t3:setPosition(posForCharacter(t3, AMPERE.MAPSIZE / 2 - 300))
+    props:append(t3)
+    scroll:addChild(t3, 80)
+    local t4 = PROPS.create('torch')
+    t4:setPosition(posForCharacter(t4, AMPERE.MAPSIZE / 2 + 300))
+    props:append(t4)
+    scroll:addChild(t4, 80)
 end

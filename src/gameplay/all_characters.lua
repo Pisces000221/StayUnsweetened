@@ -14,6 +14,7 @@ require 'src/gameplay/sucrose/cane'
 SUCROSE.create = function(name, isGoingLeft)
     isGoingLeft = isGoingLeft or false
     local ret = SUCROSE[name]:create(isGoingLeft)
+    ret.UNIT.name = name
     ret.UNIT.isGoingLeft = isGoingLeft
     ret.UNIT.maxHP = SUCROSE[name].maxHP
     ret.UNIT.HP = SUCROSE[name].maxHP
@@ -35,6 +36,7 @@ require 'src/gameplay/props/torch'
 
 PROPS.create = function(name)
     local ret = PROPS[name]:create()
+    ret.UNIT.name = name
     ret.UNIT.position = function(self) return ret:getPositionX() end
     ret.UNIT.initialForce = table.shallow_copy(PROPS[name].initialForce)
     ret.UNIT.force = table.shallow_copy(PROPS[name].initialForce)
