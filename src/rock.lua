@@ -10,6 +10,7 @@ local function main()
     collectgarbage('collect')
     collectgarbage('setpause', 100)
     collectgarbage('setstepmul', 5000)
+    math.randomseed(os.time())
 	cc.FileUtils:getInstance():addSearchResolutionsOrder('src');
 	cc.FileUtils:getInstance():addSearchResolutionsOrder('res');
     

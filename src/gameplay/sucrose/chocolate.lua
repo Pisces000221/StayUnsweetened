@@ -10,7 +10,7 @@ SUCROSE['chocolate'] = {
     maxHP = 1200,
     multiplier = { [FORCE_HEAT] = 1, [FORCE_FLOOD] = 1 },
     bonus = 15,
-    create = function(self)
+    create = function(self, isGoingLeft)
         local ret = globalSprite(self.spriteFrame)
         ret.UNIT = {}
         ret.imageRadius = globalImageWidth(self.spriteFrame) * 0.5
