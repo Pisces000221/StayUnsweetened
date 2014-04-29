@@ -3,6 +3,7 @@ require 'src/logging'
 require 'src/global'
 require 'src/scenes/MYTEST/MYTEST1'
 require 'src/scenes/MYTEST/MYTEST2'
+require 'src/scenes/MYTEST/MYTEST3'
 require 'src/scenes/StartupScene'
 
 local function main()
