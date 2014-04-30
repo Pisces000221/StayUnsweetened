@@ -7,26 +7,24 @@ SunnyMenu.rayRadius = 200
 SunnyMenu.rayOriginPadding = 30
 SunnyMenu.itemInDur = 1
 SunnyMenu.itemOutDur = 0.6
+SunnyMenu.mainImage = 'constructions'
+SunnyMenu.itemImage = 'menu_prop_bg'
 
 function SunnyMenu.create(self, images, callbacks)
     local size = cc.Director:getInstance():getVisibleSize()
     local node = cc.Node:create()
     local menu = cc.Menu:create()
-    local r2 = {}   -- stores the square radius of each image
-    local dragger   -- the image that follows the touch
+    local main_r, item_r    -- stores the square width of each image
+    local main_r2, item_r2  -- stores the square radius of each image
+    local dragger           -- the image that follows the touch
     menu:setPosition(cc.p(0, 0))
     node:addChild(menu)
-    if images[0] == nil then
-        cclog('WARNING: SUNNY: didn\'t give the main image')
-        images[0] = ''
-    end
     local N = #images
     local theta = math.pi / (N + N - 2)
     local items = {}
     node.isActivated = false
     
     local function activate()
-        cclog('SUNNY: activated')
         node.isActivated = true
         for i = 1, N do
             items[i]:runAction(cc.Spawn:create(
@@ -38,7 +36,6 @@ function SunnyMenu.create(self, images, callbacks)
         end
     end
     local function idle()
-        cclog('SUNNY: set idle')
         node.isActivated = false
         for i = 1, N do
             items[i]:runAction(cc.Spawn:create(
@@ -62,11 +59,11 @@ function SunnyMenu.create(self, images, callbacks)
     local function t_began(touch, event)
         local location = node:convertTouchToNodeSpace(touch)
         if not node.isActivated then return false end
-        shouldIdle = location.x * location.x + location.y * location.y > r2[0]
+        shouldIdle = location.x * location.x + location.y * location.y > main_r2
         for i = 1, N do
             local px, py = items[i]:getPosition()
             local dx, dy = location.x - px, location.y - py
-            local isout = dx * dx + dy * dy > r2[i]
+            local isout = dx * dx + dy * dy > item_r2
             shouldIdle = shouldIdle and isout
             if not isout then
                 dragger = globalSprite(images[i])
@@ -98,16 +95,25 @@ function SunnyMenu.create(self, images, callbacks)
     cancelLayer:getEventDispatcher()
         :addEventListenerWithSceneGraphPriority(listener, cancelLayer)
     
-    local mainItem = SimpleMenuItemSprite:create(images[0], toggle)
+    local mainItem = SimpleMenuItemSprite:create(SunnyMenu.mainImage, toggle)
+    mainItem:setAnchorPoint(cc.p(1, 0))
+    mainItem:setPosition(cc.p(size.width + 48, -48))
     menu:addChild(mainItem)
-    r2[0] = globalImageWidth(images[0]) / 2
-    r2[0] = r2[0] * r2[0]
+    main_r = globalImageWidth(SunnyMenu.mainImage) / 2
+    main_r2 = main_r * main_r
+    item_r = globalImageWidth(SunnyMenu.itemImage) / 2
+    item_r2 = item_r * item_r
     
     for i = 1, N do
-        items[i] = globalSprite(images[i])
+        items[i] = globalSprite(SunnyMenu.itemImage)
+        items[i]:setPosition(cc.p(size.width, 0))
         items[i]:setOpacity(0)
-        r2[i] = globalImageWidth(images[i]) / 2
-        r2[i] = r2[i] * r2[i]
+        local icon = globalSprite(images[i])
+        local maxside = math.max(globalImageWidth(images[i]), globalImageHeight(images[i]))
+        icon:setScale(item_r * 2 * 0.8 / maxside)
+        icon:setPosition(cc.p(item_r, item_r))
+        items[i]:addChild(icon)
+        items[i]:setCascadeOpacityEnabled(true)
         node:addChild(items[i])
     end
     

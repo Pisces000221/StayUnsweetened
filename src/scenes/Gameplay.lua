@@ -182,7 +182,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
         function(idx) cclog(idx) end)
     --construct:setAnchorPoint(cc.p(1, 0))
     local sunnyMain_radius = globalImageWidth(Gameplay.constructionOptions[0]) / 2
-    construct:setPosition(cc.p(size.width - sunnyMain_radius, -SunnyMenu.rayRadius + sunnyMain_radius))
+    construct:setPosition(cc.p(-sunnyMain_radius, -SunnyMenu.rayRadius + sunnyMain_radius))
     construct:runAction(cc.EaseElasticOut:create(
         cc.MoveBy:create(Gameplay.sunnyMoveDur, cc.p(0, SunnyMenu.rayRadius)), 0.6))
     parent:addChild(construct)
