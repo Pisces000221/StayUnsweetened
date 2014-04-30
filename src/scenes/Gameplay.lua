@@ -85,8 +85,9 @@ function Gameplay.boot(self, parent, gameOverCallback)
         menu:runAction(cc.Sequence:create(
             cc.DelayTime:create(Gameplay.menuRemoveDelay),
             cc.CallFunc:create(function() menu:removeFromParent() end)))
-        construct:runAction(cc.EaseElasticIn:create(
-            cc.MoveBy:create(Gameplay.sunnyMoveDur, cc.p(0, -SunnyMenu.rayRadius)), 1))
+        construct:runAction(cc.Sequence:create(cc.EaseElasticIn:create(
+            cc.MoveBy:create(Gameplay.sunnyMoveDur, cc.p(0, -SunnyMenu.rayRadius)), 1),
+            cc.CallFunc:create(function() construct:removeFromParent() end)))
         -- reset data
         while #props > 0 do
             local p = props:pop()
