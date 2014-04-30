@@ -12,8 +12,8 @@ local function main()
     collectgarbage('setpause', 100)
     collectgarbage('setstepmul', 5000)
     math.randomseed(os.time())
-	cc.FileUtils:getInstance():addSearchResolutionsOrder('src');
-	cc.FileUtils:getInstance():addSearchResolutionsOrder('res');
+    cc.FileUtils:getInstance():addSearchResolutionsOrder('src');
+    cc.FileUtils:getInstance():addSearchResolutionsOrder('res');
     
     -- support debugging
     local platform = cc.Application:getInstance():getTargetPlatform()
@@ -28,7 +28,7 @@ local function main()
     -- load sprite frames
     cc.SpriteFrameCache:getInstance():addSpriteFrames('ss.plist')
     -- run
-    local scene = StartupScene:create()
+    local scene = MYTEST3:create()
 
     if cc.Director:getInstance():getRunningScene() then
         cc.Director:getInstance():replaceScene(scene)
