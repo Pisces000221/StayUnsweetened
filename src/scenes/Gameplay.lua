@@ -4,6 +4,7 @@ require 'src/gameplay/all_characters'
 require 'src/gameplay/waves'
 require 'src/data/set'
 require 'src/widgets/SimpleMenuItemSprite'
+require 'src/widgets/SunnyMenu'
 require 'src/widgets/WaveToast'
 require 'src/scenes/PausingScene'
 
@@ -13,12 +14,16 @@ Gameplay.groundYOffset = 80
 Gameplay.pauseButtonPadding = cc.p(10, 10)
 Gameplay.pauseMenuGetOutDur = 0.6
 Gameplay.menuRemoveDelay = Gameplay.pauseMenuGetOutDur
+Gameplay.sunnyMoveDur = 1
 
 Gameplay.jumpDur = 4
 Gameplay.jumpHeight = 100
 Gameplay.reacherFadeOutDur = 0.5
 Gameplay.reacherJumpCount = 9
 Gameplay.reacherYMoveSpeed = 120
+
+Gameplay.constructionOptions =
+    { [0] = 'cube', [1] = 'chocolate', [2] = 'pause', [3] = 'restart' }
 
 local function posForCharacter(ch, x)
     return cc.p(x, Gameplay.groundYOffset + ch:getAnchorPointInPoints().y)
@@ -66,18 +71,23 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local props = set.new()
     local tickScheduleEntry = 0
     local tick
+    local construct         -- The menu to display construction options
     enableScheduleOnce()
     -- We have to implement this here
     -- 'Cause if not, our lovely registerScriptTapHandler will raise an error.
     local gameOver = function()
         parent:getScheduler():unscheduleScriptEntry(tickScheduleEntry)
         stopAllScheduleOnce(parent)
+        -- reset display
         pause_item:runAction(cc.EaseElasticIn:create(
             cc.MoveBy:create(Gameplay.pauseMenuGetOutDur,
             cc.p(0, pause_item:getContentSize().height + Gameplay.pauseButtonPadding.y)), 0.8))
         menu:runAction(cc.Sequence:create(
             cc.DelayTime:create(Gameplay.menuRemoveDelay),
             cc.CallFunc:create(function() menu:removeFromParent() end)))
+        construct:runAction(cc.EaseElasticIn:create(
+            cc.MoveBy:create(Gameplay.sunnyMoveDur, cc.p(0, -SunnyMenu.rayRadius)), 1))
+        -- reset data
         while #props > 0 do
             local p = props:pop()
             p:runAction(cc.Sequence:create(
@@ -129,7 +139,6 @@ function Gameplay.boot(self, parent, gameOverCallback)
     tick = function(dt)
         local i = 1
         while i <= #enemies do
-            --if enemies[i] == nil then cclog('i = %d', i); cclogtable(enemies) end
             local p = enemies[i].UNIT:position()
             local eu = enemies[i].UNIT
             if eu.isGoingLeft and p < (AMPERE.MAPSIZE + AMPERE.BALLWIDTH) / 2
@@ -149,7 +158,6 @@ function Gameplay.boot(self, parent, gameOverCallback)
             if eu.HP <= 0 then
                 enemies[i]:runAction(cc.FadeOut:create(1))
                 enemies:remove(i)
-                --cclog('enemy #%d: out', i)
                 -- debug-use only: display score
                 local scoreLabel = cc.Label:createWithTTF(globalTTFConfig(36), eu.name)
                 scoreLabel:setPosition(cc.p(p, 280))
@@ -166,6 +174,17 @@ function Gameplay.boot(self, parent, gameOverCallback)
     end
     -- hello.lua (75)
     tickScheduleEntry = parent:getScheduler():scheduleScriptFunc(tick, 0, false)
+    
+    -- Add the construction menu
+    construct = SunnyMenu:create(
+        Gameplay.constructionOptions,
+        function(idx) cclog(idx) end)
+    --construct:setAnchorPoint(cc.p(1, 0))
+    local sunnyMain_radius = globalImageWidth(Gameplay.constructionOptions[0]) / 2
+    construct:setPosition(cc.p(size.width - sunnyMain_radius, -SunnyMenu.rayRadius + sunnyMain_radius))
+    construct:runAction(cc.EaseElasticOut:create(
+        cc.MoveBy:create(Gameplay.sunnyMoveDur, cc.p(0, SunnyMenu.rayRadius)), 0.6))
+    parent:addChild(construct)
     
     WaveToast:show(parent, 3)
     local waveData = AMPERE.WAVES.get(3)
