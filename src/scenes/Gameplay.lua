@@ -127,7 +127,9 @@ function Gameplay.boot(self, parent, gameOverCallback)
     parent:addChild(menu)
     
     tick = function(dt)
-        for i = 1, #enemies do
+        local i = 1
+        while i <= #enemies do
+            --if enemies[i] == nil then cclog('i = %d', i); cclogtable(enemies) end
             local p = enemies[i].UNIT:position()
             local eu = enemies[i].UNIT
             if eu.isGoingLeft and p < (AMPERE.MAPSIZE + AMPERE.BALLWIDTH) / 2
@@ -135,10 +137,10 @@ function Gameplay.boot(self, parent, gameOverCallback)
                 eu.reachedBall = true
                 print('reacher isgoingleft: ', enemies[i].UNIT.isGoingLeft)
                 print('reacher position: ', p)
-                gameOver()
+                gameOver(); return
             end
-            for i = 1, #props do
-                local pr = props[i]
+            for j = 1, #props do
+                local pr = props[j]
                 local f = pr.UNIT:getForceForPosition(p, FORCE_HEAT) * dt
                 if f > 0 then eu:damage(eu.multiplier[FORCE_HEAT] * f) end
                 f = pr.UNIT:getForceForPosition(p, FORCE_FLOOD) * dt
@@ -147,6 +149,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
             if eu.HP <= 0 then
                 enemies[i]:runAction(cc.FadeOut:create(1))
                 enemies:remove(i)
+                --cclog('enemy #%d: out', i)
                 -- debug-use only: display score
                 local scoreLabel = cc.Label:createWithTTF(globalTTFConfig(36), eu.name)
                 scoreLabel:setPosition(cc.p(p, 280))
@@ -157,6 +160,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
                     cc.CallFunc:create(function() scoreLabel:removeFromParent() end)))
                 i = i - 1
             end
+            i = i + 1
         end
         for i = 1, #props do props[i].UNIT:update(dt) end
     end
