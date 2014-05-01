@@ -15,6 +15,7 @@ Gameplay.pauseButtonPadding = cc.p(10, 10)
 Gameplay.pauseMenuGetOutDur = 0.6
 Gameplay.menuRemoveDelay = Gameplay.pauseMenuGetOutDur
 Gameplay.sunnyMoveDur = 1
+Gameplay.propDropDur = 1
 
 Gameplay.jumpDur = 4
 Gameplay.jumpHeight = 100
@@ -23,7 +24,9 @@ Gameplay.reacherJumpCount = 9
 Gameplay.reacherYMoveSpeed = 120
 
 Gameplay.constructionOptions =
-    { [0] = 'cube', [1] = 'chocolate', [2] = 'pause', [3] = 'restart' }
+    { [0] = 'cube', [1] = 'chocolate', [2] = 'torch_body', [3] = 'cane' }
+Gameplay.constructionTypes =
+    { [1] = 'chocolate', [2] = 'torch', [3] = 'cane' }
 
 local function posForCharacter(ch, x)
     return cc.p(x, Gameplay.groundYOffset + ch:getAnchorPointInPoints().y)
@@ -180,9 +183,19 @@ function Gameplay.boot(self, parent, gameOverCallback)
     construct = SunnyMenu:create(
         Gameplay.constructionOptions,
         function(idx, p)
-            local s = globalSprite(Gameplay.constructionOptions[idx])
-            s:setPosition(p)
-            parent:addChild(s)
+            local name = Gameplay.constructionTypes[idx]
+            local ch = PROPS.create(name)
+            local p0 = -scroll:getPosition()    -- will only get X here
+            local anchor = ch:getAnchorPoint()
+            local sch = ch:getTextureRect()
+            anchor.x = (anchor.x - 0.5) * sch.width
+            anchor.y = (anchor.y - 0.5) * sch.height
+            -- Now anchor is in points
+            ch:setPosition(cc.p(p0 + p.x + anchor.x, p.y + anchor.y))
+            ch:runAction(cc.EaseQuadraticActionOut:create(
+                cc.MoveTo:create(Gameplay.propDropDur, posForCharacter(ch, p0 + p.x + anchor.x))))
+            props:append(ch)
+            scroll:addChild(ch, 80)
         end)
     construct:setPosition(cc.p(0, -SunnyMenu.rayRadius))
     construct:runAction(cc.EaseElasticOut:create(
@@ -224,22 +237,4 @@ function Gameplay.boot(self, parent, gameOverCallback)
         scheduleOnce(parent, createOneEnemy, AMPERE.WAVES.delay[enemyType])
     end
     createOneEnemy()
-    
-    ---- ==== For debug use only ==== ----
-    local t1 = PROPS.create('torch')
-    t1:setPosition(posForCharacter(t1, 250))
-    props:append(t1)
-    scroll:addChild(t1, 80)
-    local t2 = PROPS.create('torch')
-    t2:setPosition(posForCharacter(t2, 500))
-    props:append(t2)
-    scroll:addChild(t2, 80)
-    local t3 = PROPS.create('torch')
-    t3:setPosition(posForCharacter(t3, AMPERE.MAPSIZE / 2 - 300))
-    props:append(t3)
-    scroll:addChild(t3, 80)
-    local t4 = PROPS.create('torch')
-    t4:setPosition(posForCharacter(t4, AMPERE.MAPSIZE / 2 + 300))
-    props:append(t4)
-    scroll:addChild(t4, 80)
 end

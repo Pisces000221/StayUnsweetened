@@ -85,9 +85,12 @@ function SunnyMenu.create(self, images, callback)
 
     local function t_ended(touch, event)
         if shouldIdle then idle() end
+        local p = node:convertTouchToNodeSpace(touch)
         if dragger then
             -- I've got the mo-oo-oo-oo-oo-oo-oo-oo-ooves like 'dragger'!!
-            callback(selectedIdx, node:convertTouchToNodeSpace(touch))
+            if (p.x - size.width)*(p.x - size.width) + p.y*p.y > main_r2 * 4 then
+                callback(selectedIdx, node:convertTouchToNodeSpace(touch))
+            end
             dragger:removeFromParent()
             dragger = nil
         end
