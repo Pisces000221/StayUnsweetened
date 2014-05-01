@@ -4,19 +4,20 @@ require 'src/widgets/SimpleMenuItemSprite'
 
 SunnyMenu = {}
 SunnyMenu.rayRadius = 200
-SunnyMenu.rayOriginPadding = 30
+SunnyMenu.rayOriginPadding = 76
 SunnyMenu.itemInDur = 1
 SunnyMenu.itemOutDur = 0.6
 SunnyMenu.mainImage = 'constructions'
 SunnyMenu.itemImage = 'menu_prop_bg'
 
-function SunnyMenu.create(self, images, callbacks)
+function SunnyMenu.create(self, images, callback)
     local size = cc.Director:getInstance():getVisibleSize()
     local node = cc.Node:create()
     local menu = cc.Menu:create()
     local main_r, item_r    -- stores the square width of each image
     local main_r2, item_r2  -- stores the square radius of each image
     local dragger           -- the image that follows the touch
+    local selectedIdx
     menu:setPosition(cc.p(0, 0))
     node:addChild(menu)
     local N = #images
@@ -66,6 +67,7 @@ function SunnyMenu.create(self, images, callbacks)
             local isout = dx * dx + dy * dy > item_r2
             shouldIdle = shouldIdle and isout
             if not isout then
+                selectedIdx = i
                 dragger = globalSprite(images[i])
                 dragger:setPosition(location)
                 cancelLayer:addChild(dragger)
@@ -82,9 +84,13 @@ function SunnyMenu.create(self, images, callbacks)
     end
 
     local function t_ended(touch, event)
-        local location = touch:getLocation()
         if shouldIdle then idle() end
-        if dragger then dragger:removeFromParent(); dragger = nil end
+        if dragger then
+            -- I've got the mo-oo-oo-oo-oo-oo-oo-oo-ooves like 'dragger'!!
+            callback(selectedIdx, node:convertTouchToNodeSpace(touch))
+            dragger:removeFromParent()
+            dragger = nil
+        end
     end
 
     local listener = cc.EventListenerTouchOneByOne:create()
@@ -97,7 +103,7 @@ function SunnyMenu.create(self, images, callbacks)
     
     local mainItem = SimpleMenuItemSprite:create(SunnyMenu.mainImage, toggle)
     mainItem:setAnchorPoint(cc.p(1, 0))
-    mainItem:setPosition(cc.p(size.width + 48, -48))
+    mainItem:setPosition(cc.p(size.width, 0))
     menu:addChild(mainItem)
     main_r = globalImageWidth(SunnyMenu.mainImage) / 2
     main_r2 = main_r * main_r

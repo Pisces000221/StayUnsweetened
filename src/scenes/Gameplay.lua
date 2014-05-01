@@ -179,10 +179,12 @@ function Gameplay.boot(self, parent, gameOverCallback)
     -- Add the construction menu
     construct = SunnyMenu:create(
         Gameplay.constructionOptions,
-        function(idx) cclog(idx) end)
-    --construct:setAnchorPoint(cc.p(1, 0))
-    local sunnyMain_radius = globalImageWidth(Gameplay.constructionOptions[0]) / 2
-    construct:setPosition(cc.p(-sunnyMain_radius, -SunnyMenu.rayRadius + sunnyMain_radius))
+        function(idx, p)
+            local s = globalSprite(Gameplay.constructionOptions[idx])
+            s:setPosition(p)
+            parent:addChild(s)
+        end)
+    construct:setPosition(cc.p(0, -SunnyMenu.rayRadius))
     construct:runAction(cc.EaseElasticOut:create(
         cc.MoveBy:create(Gameplay.sunnyMoveDur, cc.p(0, SunnyMenu.rayRadius)), 0.6))
     parent:addChild(construct)
