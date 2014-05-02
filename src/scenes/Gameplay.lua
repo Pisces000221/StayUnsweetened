@@ -233,10 +233,11 @@ function Gameplay.boot(self, parent, gameOverCallback)
             checked[enemyType] = true
             checkCount = checkCount + 1
             if checkCount == #AMPERE.WAVES.names then
-                cclog('Wave ended')
+                cclog('Wave #%d ended, coming in %d seconds', curWave, waveData['rest'])
                 scheduleOnce(parent, createOneEnemy, waveData['rest'])
                 curWave = curWave + 1
-                WaveToast:show(parent, curWave)
+                scheduleOnce(parent,
+                    function() WaveToast:show(parent, curWave) end, waveData['rest'])
                 waveData = AMPERE.WAVES.get(curWave)
                 return
             end
