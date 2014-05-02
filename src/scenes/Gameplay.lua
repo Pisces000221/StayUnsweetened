@@ -202,8 +202,9 @@ function Gameplay.boot(self, parent, gameOverCallback)
         cc.MoveBy:create(Gameplay.sunnyMoveDur, cc.p(0, SunnyMenu.rayRadius)), 0.6))
     parent:addChild(construct)
     
-    WaveToast:show(parent, 3)
-    local waveData = AMPERE.WAVES.get(3)
+    local curWave = 1
+    WaveToast:show(parent, 1)
+    local waveData = AMPERE.WAVES.get(1)
     function createOneEnemy()
         -- Generate parametres
         local isGoingLeft = math.random(2) == 1
@@ -231,7 +232,14 @@ function Gameplay.boot(self, parent, gameOverCallback)
         if waveData[enemyName] <= 0 then
             checked[enemyType] = true
             checkCount = checkCount + 1
-            if checkCount == #AMPERE.WAVES.names then cclog('Wave ended'); return end
+            if checkCount == #AMPERE.WAVES.names then
+                cclog('Wave ended')
+                scheduleOnce(parent, createOneEnemy, waveData['rest'])
+                curWave = curWave + 1
+                WaveToast:show(parent, curWave)
+                waveData = AMPERE.WAVES.get(curWave)
+                return
+            end
         end
         -- Ready to create next one
         scheduleOnce(parent, createOneEnemy, AMPERE.WAVES.delay[enemyType])

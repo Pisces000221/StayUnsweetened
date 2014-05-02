@@ -11,10 +11,13 @@ AMPERE.WAVES.starting = {
 AMPERE.WAVES.delay = {1, 1}
 
 function AMPERE.WAVES.get(wave)
-    local ret = {}
+    local ret = { ['rest'] = 0 }
     if wave <= #AMPERE.WAVES.starting then
         for i = 1, #AMPERE.WAVES.starting[wave] do
-            ret[AMPERE.WAVES.names[i]] = AMPERE.WAVES.starting[wave][i] end
+            local c = AMPERE.WAVES.starting[wave][i]
+            ret[AMPERE.WAVES.names[i]] = c
+            ret['rest'] = ret['rest'] + c
+        end
     else
     end
     return ret
