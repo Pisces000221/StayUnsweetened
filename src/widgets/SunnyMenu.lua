@@ -9,6 +9,9 @@ SunnyMenu.itemInDur = 1
 SunnyMenu.itemOutDur = 0.6
 SunnyMenu.mainImage = 'constructions'
 SunnyMenu.itemImage = 'menu_prop_bg'
+SunnyMenu.validYBorder = 120
+SunnyMenu.cancellingFadeDur = 0.5
+SunnyMenu.cancellingOpacity = 64
 
 function SunnyMenu.create(self, images, callback)
     local size = cc.Director:getInstance():getVisibleSize()
@@ -52,6 +55,13 @@ function SunnyMenu.create(self, images, callback)
         else activate() end
     end
     
+    -- for further uses
+    local isCancelling = function(p)
+        return p.y < SunnyMenu.validYBorder or p.y > size.height - SunnyMenu.validYBorder
+          or (p.x - size.width)*(p.x - size.width) + p.y*p.y < main_r2 * 4
+    end
+    local isInCancelRegionNow = false
+    
     local cancelLayer = cc.Layer:create()
     node:addChild(cancelLayer)
     -- handle touch events
@@ -79,7 +89,18 @@ function SunnyMenu.create(self, images, callback)
 
     local function t_moved(touch, event)
         if dragger then
-            dragger:setPosition(node:convertTouchToNodeSpace(touch))
+            local p = node:convertTouchToNodeSpace(touch)
+            dragger:setPosition(p)
+            -- Let it 'Go'! The code doesn't bother me anyway!!
+            if isCancelling(p) and not isInCancelRegionNow then
+                dragger:runAction(cc.FadeTo:create(
+                    SunnyMenu.cancellingFadeDur, SunnyMenu.cancellingOpacity))
+                isInCancelRegionNow = true
+            elseif not isCancelling(p) and isInCancelRegionNow then
+                dragger:runAction(cc.FadeTo:create(
+                    SunnyMenu.cancellingFadeDur, 255))
+                isInCancelRegionNow = false
+            end
         end
     end
 
@@ -88,7 +109,7 @@ function SunnyMenu.create(self, images, callback)
         local p = node:convertTouchToNodeSpace(touch)
         if dragger then
             -- I've got the mo-oo-oo-oo-oo-oo-oo-oo-ooves like 'dragger'!!
-            if (p.x - size.width)*(p.x - size.width) + p.y*p.y > main_r2 * 4 then
+            if not isCancelling(p) then
                 callback(selectedIdx, node:convertTouchToNodeSpace(touch))
             end
             dragger:removeFromParent()
