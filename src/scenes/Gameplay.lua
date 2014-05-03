@@ -22,11 +22,15 @@ Gameplay.scoreLabelMoveDur = 1
 Gameplay.scoreLabelXPadding = 15
 Gameplay.scoreLabelYPadding = 12
 Gameplay.energyLabelYPadding = 12
-ScoreLabel.scoreLabelMaxDigits = 12
-ScoreLabel.energyLabelMaxDigits = 6
+Gameplay.scoreLabelMaxDigits = 12
+Gameplay.energyLabelMaxDigits = 6
 Gameplay.scoreLabelFontSize = 60
 Gameplay.energyLabelFontSize = 45
+Gameplay.mulLabelFontSize = 48
+Gameplay.mulLabelXPadding = 460
+Gameplay.nextWaveScheduleID = 16737700  -- I didn't know what it means... Really.
 
+Gameplay.crystalBallLife = 40
 Gameplay.baseScore = 40
 Gameplay.baseEnergy = 3 / 8
 Gameplay.initialScoreMul = 8
@@ -51,6 +55,7 @@ end
 
 local isScheduleOnceEnabled = true
 local scheduleOnceEntries = {}
+local IDs = {}
 
 local function enableScheduleOnce()
     isScheduleOnceEnabled = true
@@ -64,7 +69,7 @@ local function stopAllScheduleOnce(parent)
     scheduleOnceEntries = {}
 end
 
-local function scheduleOnce(parent, func, delay)
+local function scheduleOnce(parent, func, delay, id)
     if not isScheduleOnceEnabled then return end
     local entry = 0
     local removeEntry = function()
@@ -78,6 +83,23 @@ local function scheduleOnce(parent, func, delay)
     entry = parent:getScheduler():scheduleScriptFunc(
         function() removeEntry(); func() end, delay, false)
     scheduleOnceEntries[#scheduleOnceEntries + 1] = entry
+    if id ~= nil then IDs[id] = { ENTRY = entry, CALLBACK = func } end
+end
+
+local function scheduleImmediately(parent, id)
+    if not isScheduleOnceEnabled then return end
+    local entry = IDs[id].ENTRY
+    -- remove entry and unschedule
+    parent:getScheduler():unscheduleScriptEntry(entry)
+    for i = 1, #scheduleOnceEntries do
+        if scheduleOnceEntries[i] == entry then
+            scheduleOnceEntries[i] = nil
+        end
+    end
+    cclogtable(IDs[id])
+    local func = IDs[id].CALLBACK
+    func()
+    IDs[id] = nil
 end
 
 function Gameplay.boot(self, parent, gameOverCallback)
@@ -89,22 +111,13 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local tickScheduleEntry = 0
     local tick
     local construct         -- The menu to display construction options
-    local scoreLabel, energyLabel
-    local curWave, waveData
+    local scoreLabel, energyLabel, mulLabel
+    local curWave, waveData, isResting = false
     local scoreBall = crystal_ball.new(Gameplay.baseScore, Gameplay.initialScoreMul)
     local energyBall = crystal_ball.new(Gameplay.baseEnergy, Gameplay.initialScoreMul)
     enableScheduleOnce()
     
-    local nextWave = function()
-        cclog('Wave #%d ended, coming in %d seconds', curWave, waveData['rest'])
-        scheduleOnce(parent, createOneEnemy, waveData['rest'])
-        curWave = curWave + 1
-        scoreBall:inc_multiplier()
-        energyBall:inc_multiplier()
-        scheduleOnce(parent,
-            function() WaveToast:show(parent, curWave) end, waveData['rest'])
-        waveData = AMPERE.WAVES.get(curWave)
-    end
+    local nextWave      -- implement later
     -- We have to implement this here
     -- 'Cause if not, our lovely registerScriptTapHandler will raise an error.
     local gameOver = function()
@@ -125,7 +138,12 @@ function Gameplay.boot(self, parent, gameOverCallback)
             cc.p(scoreLabel:getContentSize().width, 0)), 0.8)
         scoreLabel:runAction(cc.Sequence:create(labelAction,
             cc.CallFunc:create(function() scoreLabel:removeFromParent() end)))
-        energyLabel:runAction(labelAction:clone())
+        energyLabel:runAction(cc.Sequence:create(labelAction:clone(),
+            cc.CallFunc:create(function() energyLabel:removeFromParent() end)))
+        mulLabel:runAction(cc.Sequence:create(cc.EaseElasticIn:create(
+            cc.MoveBy:create(Gameplay.scoreLabelMoveDur,
+            cc.p(0, mulLabel:getContentSize().height + Gameplay.energyLabelYPadding)), 0.8),
+            cc.CallFunc:create(function() mulLabel:removeFromParent() end)))
         -- reset data
         while #props > 0 do
             local p = props:pop()
@@ -135,21 +153,11 @@ function Gameplay.boot(self, parent, gameOverCallback)
         end
         while #enemies > 0 do
             local e = enemies:pop()
-            if e.UNIT.reachedBall then
-                e:stopAllActions()
-                local deltaY = e:getPositionY() - posYForCharacter(e)
-                e:runAction(cc.Sequence:create(
-                    cc.MoveBy:create(deltaY / Gameplay.reacherYMoveSpeed, cc.p(0, -deltaY)),
-                    cc.JumpBy:create(Gameplay.jumpDur, cc.p(0, 0), Gameplay.jumpHeight, Gameplay.reacherJumpCount),
-                    cc.FadeOut:create(Gameplay.reacherFadeOutDur),
-                    cc.CallFunc:create(function() e:removeFromParent() end)))
-            else
-                local dx = math.random(size.width / 3) + size.width
-                if e.UNIT:position() < AMPERE.MAPSIZE / 2 then dx = -dx end
-                e:runAction(cc.Sequence:create(
-                    cc.MoveBy:create(1, cc.p(dx, 0)),
-                    cc.CallFunc:create(function() e:removeFromParent() end)))
-            end
+            local dx = math.random(size.width / 3) + size.width
+            if e.UNIT:position() < AMPERE.MAPSIZE / 2 then dx = -dx end
+            e:runAction(cc.Sequence:create(
+                cc.MoveBy:create(1, cc.p(dx, 0)),
+                cc.CallFunc:create(function() e:removeFromParent() end)))
         end
         gameOverCallback()
         cclog('Game Over')
@@ -186,12 +194,26 @@ function Gameplay.boot(self, parent, gameOverCallback)
         while i <= #enemies do
             local p = enemies[i].UNIT:position()
             local eu = enemies[i].UNIT
+            local e = enemies[i]
             if eu.isGoingLeft and p < (AMPERE.MAPSIZE + AMPERE.BALLWIDTH) / 2
               or not eu.isGoingLeft and p > (AMPERE.MAPSIZE - AMPERE.BALLWIDTH) / 2 then
-                eu.reachedBall = true
+                -- let it jump!
+                e:stopAllActions()
+                local deltaY = e:getPositionY() - posYForCharacter(e)
+                e:runAction(cc.Sequence:create(
+                    cc.MoveBy:create(deltaY / Gameplay.reacherYMoveSpeed, cc.p(0, -deltaY)),
+                    cc.JumpBy:create(Gameplay.jumpDur, cc.p(0, 0), Gameplay.jumpHeight, Gameplay.reacherJumpCount),
+                    cc.FadeOut:create(Gameplay.reacherFadeOutDur),
+                    cc.CallFunc:create(function() e:removeFromParent() end)))
                 print('reacher isgoingleft: ', enemies[i].UNIT.isGoingLeft)
                 print('reacher position: ', p)
-                gameOver(); return
+                scoreBall:dec_base_score(1 / Gameplay.crystalBallLife)
+                energyBall:dec_base_score(1 / Gameplay.crystalBallLife)
+                mulLabel:setString('x' .. scoreBall:base_score_rate() * Gameplay.crystalBallLife)
+                -- Timber!!
+                enemies:remove(i)
+                if #enemies == 0 then nextWave(); return; end
+                if scoreBall:is_finished() then gameOver(); return; end
             end
             for j = 1, #props do
                 local pr = props[j]
@@ -245,7 +267,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     parent:addChild(construct)
     
     -- Display score
-    scoreLabel = ScoreLabel:create(Gameplay.scoreLabelFontSize, ScoreLabel.scoreLabelMaxDigits)
+    scoreLabel = ScoreLabel:create(Gameplay.scoreLabelFontSize, Gameplay.scoreLabelMaxDigits)
     scoreLabel:setAnchorPoint(cc.p(1, 1))
     scoreLabel:setPosition(cc.p(
         size.width + scoreLabel:getContentSize().width - Gameplay.scoreLabelXPadding,
@@ -254,7 +276,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     scoreLabel:runAction(cc.EaseElasticOut:create(
         cc.MoveBy:create(Gameplay.scoreLabelMoveDur, cc.p(-scoreLabel:getContentSize().width, 0)), 0.8))
     -- Display energy
-    energyLabel = ScoreLabel:create(Gameplay.energyLabelFontSize, ScoreLabel.energyLabelMaxDigits)
+    energyLabel = ScoreLabel:create(Gameplay.energyLabelFontSize, Gameplay.energyLabelMaxDigits)
     energyLabel:setAnchorPoint(cc.p(1, 1))
     energyLabel:setPosition(cc.p(
         size.width + energyLabel:getContentSize().width - Gameplay.scoreLabelXPadding,
@@ -262,11 +284,21 @@ function Gameplay.boot(self, parent, gameOverCallback)
     parent:addChild(energyLabel)
     energyLabel:runAction(cc.EaseElasticOut:create(
         cc.MoveBy:create(Gameplay.scoreLabelMoveDur, cc.p(-energyLabel:getContentSize().width, 0)), 0.8))
+    -- Display multiplier
+    mulLabel = globalLabel('x' .. Gameplay.crystalBallLife, Gameplay.mulLabelFontSize)
+    mulLabel:setAnchorPoint(cc.p(1, 0))
+    mulLabel:setPosition(cc.p(
+        size.width - Gameplay.mulLabelXPadding,
+        size.height - Gameplay.scoreLabelYPadding))
+    parent:addChild(mulLabel)
+    mulLabel:runAction(cc.EaseElasticOut:create(
+        cc.MoveBy:create(Gameplay.scoreLabelMoveDur, cc.p(0, -mulLabel:getContentSize().height)), 0.8))
     
     curWave = 1
     WaveToast:show(parent, 1)
     waveData = AMPERE.WAVES.get(1)
-    function createOneEnemy()
+    local function createOneEnemy()
+        isResting = false
         -- Generate parametres
         local isGoingLeft = math.random(2) == 1
         local checked, checkCount = {}, 0
@@ -302,4 +334,17 @@ function Gameplay.boot(self, parent, gameOverCallback)
         scheduleOnce(parent, createOneEnemy, AMPERE.WAVES.delay[enemyType])
     end
     createOneEnemy()
+    
+    nextWave = function()
+        if isResting then scheduleImmediately(parent, Gameplay.nextWaveScheduleID); return; end
+        cclog('Wave #%d ended, coming in %d seconds', curWave, waveData['rest'])
+        scheduleOnce(parent,
+            function() createOneEnemy(); WaveToast:show(parent, curWave) end,
+            waveData['rest'], Gameplay.nextWaveScheduleID)
+        curWave = curWave + 1
+        isResting = true
+        scoreBall:inc_multiplier()
+        energyBall:inc_multiplier()
+        waveData = AMPERE.WAVES.get(curWave)
+    end
 end

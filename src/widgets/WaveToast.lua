@@ -16,16 +16,14 @@ WaveToast.numberShowTime = 2
 function WaveToast.show(self, scene, number)
     local size = cc.Director:getInstance():getVisibleSize()
 
-    local waveLabel = cc.Label:createWithTTF(
-        globalTTFConfig(WaveToast.textFontSize), 'WAVE')
+    local waveLabel = globalLabel('WAVE', WaveToast.textFontSize, true)
     waveLabel:setAnchorPoint(cc.p(1, 0.5))
     waveLabel:setPosition(cc.p(
         size.width / 2 - WaveToast.xPadding, size.height * WaveToast.yPosRate))
     waveLabel:setOpacity(0)
     scene:addChild(waveLabel)
 
-    local numberLabel = cc.Label:createWithTTF(
-        globalTTFConfig(WaveToast.numberFontSize), tostring(number))
+    local numberLabel = globalLabel(tostring(number), WaveToast.numberFontSize, true)
     numberLabel:setAnchorPoint(cc.p(0, 0.5))
     numberLabel:setPosition(cc.p(
         size.width / 2 + WaveToast.xPadding, size.height * WaveToast.yPosRate))

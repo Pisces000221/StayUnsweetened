@@ -17,14 +17,9 @@ function ScoreLabel.setNumber(self, number)
 end
 
 function ScoreLabel.create(self, fontsize, maxdigits)
-    local label = cc.Label:createWithTTF({
-        fontFilePath = 'res/fonts/signika.ttf', fontSize = fontsize,
-        glyphs = cc.GLYPHCOLLECTION_DYNAMIC, distanceFieldEnabled = true
-    }, '')
+    local label = globalLabel('', fontsize)
     label.setNumber = ScoreLabel.setNumber
     label.maxDigits = maxdigits
     label:setNumber(0)
-    --cclog('maxdigits =')
-    --cclogtable(maxdigits)
     return label
 end

@@ -14,6 +14,7 @@ require 'src/gameplay/sucrose/cane'
 SUCROSE.create = function(name, isGoingLeft)
     isGoingLeft = isGoingLeft or false
     local ret = SUCROSE[name]:create(isGoingLeft)
+    ret:setFlippedX(isGoingLeft)
     ret.UNIT.name = name
     ret.UNIT.isGoingLeft = isGoingLeft
     ret.UNIT.maxHP = SUCROSE[name].maxHP

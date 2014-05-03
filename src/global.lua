@@ -1,8 +1,9 @@
 require 'Cocos2d'
 
 RES = {
-    GLOBAL_FONT = 'res/fonts/Ubuntu-R.ttf',
-    GLOBAL_FONT_B = 'res/fonts/Ubuntu-B.ttf'
+    --http://stackoverflow.com/questions/12443508/possible-to-use-an-ofl-font-in-a-gpl-project
+    GLOBAL_FONT = 'res/fonts/Signika-Bold.ttf',
+    GLOBAL_FONT_B = 'res/fonts/Signika-Regular.ttf'
 }
 
 AMPERE = {
@@ -42,6 +43,11 @@ function globalTTFConfig(fontSize, isBold)
     ttfConfig.customGlyphs = nil
     ttfConfig.distanceFieldEnabled = true
     return ttfConfig
+end
+
+function globalLabel(text, fontSize, isBold)
+    return cc.Label:createWithTTF(
+        globalTTFConfig(fontSize, isBold), text)
 end
 
 -- http://stackoverflow.com/questions/640642/how-do-you-copy-a-lua-table-by-value
