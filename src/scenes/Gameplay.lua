@@ -90,9 +90,21 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local tick
     local construct         -- The menu to display construction options
     local scoreLabel, energyLabel
+    local curWave, waveData
     local scoreBall = crystal_ball.new(Gameplay.baseScore, Gameplay.initialScoreMul)
     local energyBall = crystal_ball.new(Gameplay.baseEnergy, Gameplay.initialScoreMul)
     enableScheduleOnce()
+    
+    local nextWave = function()
+        cclog('Wave #%d ended, coming in %d seconds', curWave, waveData['rest'])
+        scheduleOnce(parent, createOneEnemy, waveData['rest'])
+        curWave = curWave + 1
+        scoreBall:inc_multiplier()
+        energyBall:inc_multiplier()
+        scheduleOnce(parent,
+            function() WaveToast:show(parent, curWave) end, waveData['rest'])
+        waveData = AMPERE.WAVES.get(curWave)
+    end
     -- We have to implement this here
     -- 'Cause if not, our lovely registerScriptTapHandler will raise an error.
     local gameOver = function()
@@ -191,6 +203,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
             if eu.HP <= 0 then
                 enemies[i]:runAction(cc.FadeOut:create(1))
                 enemies:remove(i)
+                if #enemies == 0 then nextWave(); return; end
                 -- debug-use only: display score
                 local bub = cc.Label:createWithTTF(globalTTFConfig(36), eu.name)
                 bub:setPosition(cc.p(p, 280))
@@ -250,9 +263,9 @@ function Gameplay.boot(self, parent, gameOverCallback)
     energyLabel:runAction(cc.EaseElasticOut:create(
         cc.MoveBy:create(Gameplay.scoreLabelMoveDur, cc.p(-energyLabel:getContentSize().width, 0)), 0.8))
     
-    local curWave = 1
+    curWave = 1
     WaveToast:show(parent, 1)
-    local waveData = AMPERE.WAVES.get(1)
+    waveData = AMPERE.WAVES.get(1)
     function createOneEnemy()
         -- Generate parametres
         local isGoingLeft = math.random(2) == 1
@@ -281,14 +294,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
             checked[enemyType] = true
             checkCount = checkCount + 1
             if checkCount == #AMPERE.WAVES.names then
-                cclog('Wave #%d ended, coming in %d seconds', curWave, waveData['rest'])
-                scheduleOnce(parent, createOneEnemy, waveData['rest'])
-                curWave = curWave + 1
-                scoreBall:inc_multiplier()
-                energyBall:inc_multiplier()
-                scheduleOnce(parent,
-                    function() WaveToast:show(parent, curWave) end, waveData['rest'])
-                waveData = AMPERE.WAVES.get(curWave)
+                nextWave()
                 return
             end
         end
