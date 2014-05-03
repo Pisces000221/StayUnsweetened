@@ -21,8 +21,14 @@ Gameplay.propDropDur = 1
 Gameplay.scoreLabelMoveDur = 1
 Gameplay.scoreLabelXPadding = 15
 Gameplay.scoreLabelYPadding = 12
+Gameplay.energyLabelYPadding = 12
+ScoreLabel.scoreLabelMaxDigits = 12
+ScoreLabel.energyLabelMaxDigits = 6
+Gameplay.scoreLabelFontSize = 60
+Gameplay.energyLabelFontSize = 45
 
 Gameplay.baseScore = 40
+Gameplay.baseEnergy = 3 / 8
 Gameplay.initialScoreMul = 8
 
 Gameplay.jumpDur = 4
@@ -83,8 +89,9 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local tickScheduleEntry = 0
     local tick
     local construct         -- The menu to display construction options
-    local scoreLabel
-    local theBall = crystal_ball.new(Gameplay.baseScore, Gameplay.initialScoreMul)
+    local scoreLabel, energyLabel
+    local scoreBall = crystal_ball.new(Gameplay.baseScore, Gameplay.initialScoreMul)
+    local energyBall = crystal_ball.new(Gameplay.baseEnergy, Gameplay.initialScoreMul)
     enableScheduleOnce()
     -- We have to implement this here
     -- 'Cause if not, our lovely registerScriptTapHandler will raise an error.
@@ -101,9 +108,12 @@ function Gameplay.boot(self, parent, gameOverCallback)
         construct:runAction(cc.Sequence:create(cc.EaseElasticIn:create(
             cc.MoveBy:create(Gameplay.sunnyMoveDur, cc.p(0, -SunnyMenu.rayRadius)), 1),
             cc.CallFunc:create(function() construct:removeFromParent() end)))
-        scoreLabel:runAction(cc.Sequence:create(cc.EaseElasticIn:create(
-            cc.MoveBy:create(Gameplay.scoreLabelMoveDur, cc.p(scoreLabel:getContentSize().width, 0)), 0.8),
+        local labelAction = cc.EaseElasticIn:create(
+            cc.MoveBy:create(Gameplay.scoreLabelMoveDur,
+            cc.p(scoreLabel:getContentSize().width, 0)), 0.8)
+        scoreLabel:runAction(cc.Sequence:create(labelAction,
             cc.CallFunc:create(function() scoreLabel:removeFromParent() end)))
+        energyLabel:runAction(labelAction:clone())
         -- reset data
         while #props > 0 do
             local p = props:pop()
@@ -155,8 +165,10 @@ function Gameplay.boot(self, parent, gameOverCallback)
     
     tick = function(dt)
         -- update score
-        theBall:update(dt)
-        scoreLabel:setNumber(theBall.score)
+        scoreBall:update(dt)
+        energyBall:update(dt)
+        scoreLabel:setNumber(scoreBall.score)
+        energyLabel:setNumber(energyBall.score)
         -- update everybody on the screen
         local i = 1
         while i <= #enemies do
@@ -219,15 +231,24 @@ function Gameplay.boot(self, parent, gameOverCallback)
         cc.MoveBy:create(Gameplay.sunnyMoveDur, cc.p(0, SunnyMenu.rayRadius)), 0.6))
     parent:addChild(construct)
     
-    scoreLabel = ScoreLabel:create()
+    -- Display score
+    scoreLabel = ScoreLabel:create(Gameplay.scoreLabelFontSize, ScoreLabel.scoreLabelMaxDigits)
     scoreLabel:setAnchorPoint(cc.p(1, 1))
     scoreLabel:setPosition(cc.p(
-        size.width + scoreLabel:getContentSize().width - Gameplay.scoreLabelYPadding,
-        size.height - Gameplay.scoreLabelXPadding))
-    --scoreLabel:setPosition(cc.p(200, 200))
+        size.width + scoreLabel:getContentSize().width - Gameplay.scoreLabelXPadding,
+        size.height - Gameplay.scoreLabelYPadding))
     parent:addChild(scoreLabel)
     scoreLabel:runAction(cc.EaseElasticOut:create(
         cc.MoveBy:create(Gameplay.scoreLabelMoveDur, cc.p(-scoreLabel:getContentSize().width, 0)), 0.8))
+    -- Display energy
+    energyLabel = ScoreLabel:create(Gameplay.energyLabelFontSize, ScoreLabel.energyLabelMaxDigits)
+    energyLabel:setAnchorPoint(cc.p(1, 1))
+    energyLabel:setPosition(cc.p(
+        size.width + energyLabel:getContentSize().width - Gameplay.scoreLabelXPadding,
+        size.height - Gameplay.energyLabelYPadding - scoreLabel:getContentSize().height))
+    parent:addChild(energyLabel)
+    energyLabel:runAction(cc.EaseElasticOut:create(
+        cc.MoveBy:create(Gameplay.scoreLabelMoveDur, cc.p(-energyLabel:getContentSize().width, 0)), 0.8))
     
     local curWave = 1
     WaveToast:show(parent, 1)
@@ -263,7 +284,8 @@ function Gameplay.boot(self, parent, gameOverCallback)
                 cclog('Wave #%d ended, coming in %d seconds', curWave, waveData['rest'])
                 scheduleOnce(parent, createOneEnemy, waveData['rest'])
                 curWave = curWave + 1
-                theBall:inc_multiplier()
+                scoreBall:inc_multiplier()
+                energyBall:inc_multiplier()
                 scheduleOnce(parent,
                     function() WaveToast:show(parent, curWave) end, waveData['rest'])
                 waveData = AMPERE.WAVES.get(curWave)
