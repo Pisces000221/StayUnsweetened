@@ -1,8 +1,10 @@
 require 'Cocos2d'
 require 'src/global'
 require 'src/gameplay/all_characters'
+require 'src/gameplay/crystal_ball'
 require 'src/gameplay/waves'
 require 'src/data/set'
+require 'src/widgets/ScoreLabel'
 require 'src/widgets/SimpleMenuItemSprite'
 require 'src/widgets/SunnyMenu'
 require 'src/widgets/WaveToast'
@@ -16,6 +18,12 @@ Gameplay.pauseMenuGetOutDur = 0.6
 Gameplay.menuRemoveDelay = Gameplay.pauseMenuGetOutDur
 Gameplay.sunnyMoveDur = 1
 Gameplay.propDropDur = 1
+Gameplay.scoreLabelMoveDur = 1
+Gameplay.scoreLabelXPadding = 15
+Gameplay.scoreLabelYPadding = 12
+
+Gameplay.baseScore = 40
+Gameplay.initialScoreMul = 8
 
 Gameplay.jumpDur = 4
 Gameplay.jumpHeight = 100
@@ -75,6 +83,8 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local tickScheduleEntry = 0
     local tick
     local construct         -- The menu to display construction options
+    local scoreLabel
+    local theBall = crystal_ball.new(Gameplay.baseScore, Gameplay.initialScoreMul)
     enableScheduleOnce()
     -- We have to implement this here
     -- 'Cause if not, our lovely registerScriptTapHandler will raise an error.
@@ -91,6 +101,9 @@ function Gameplay.boot(self, parent, gameOverCallback)
         construct:runAction(cc.Sequence:create(cc.EaseElasticIn:create(
             cc.MoveBy:create(Gameplay.sunnyMoveDur, cc.p(0, -SunnyMenu.rayRadius)), 1),
             cc.CallFunc:create(function() construct:removeFromParent() end)))
+        scoreLabel:runAction(cc.Sequence:create(cc.EaseElasticIn:create(
+            cc.MoveBy:create(Gameplay.scoreLabelMoveDur, cc.p(scoreLabel:getContentSize().width, 0)), 0.8),
+            cc.CallFunc:create(function() scoreLabel:removeFromParent() end)))
         -- reset data
         while #props > 0 do
             local p = props:pop()
@@ -125,8 +138,8 @@ function Gameplay.boot(self, parent, gameOverCallback)
         cc.Director:getInstance():pushScene(PausingScene:create(
             pause_item:getAnchorPoint(), cc.p(pix, piy),
             function(choseToRestart)
-                if choseToRestart then gameOver() end
-                tickScheduleEntry = parent:getScheduler():scheduleScriptFunc(tick, 0, false)
+                if choseToRestart then gameOver()
+                else tickScheduleEntry = parent:getScheduler():scheduleScriptFunc(tick, 0, false) end
             end))
         parent:getScheduler():unscheduleScriptEntry(tickScheduleEntry)
     end
@@ -141,6 +154,10 @@ function Gameplay.boot(self, parent, gameOverCallback)
     parent:addChild(menu)
     
     tick = function(dt)
+        -- update score
+        theBall:update(dt)
+        scoreLabel:setNumber(theBall.score)
+        -- update everybody on the screen
         local i = 1
         while i <= #enemies do
             local p = enemies[i].UNIT:position()
@@ -163,13 +180,13 @@ function Gameplay.boot(self, parent, gameOverCallback)
                 enemies[i]:runAction(cc.FadeOut:create(1))
                 enemies:remove(i)
                 -- debug-use only: display score
-                local scoreLabel = cc.Label:createWithTTF(globalTTFConfig(36), eu.name)
-                scoreLabel:setPosition(cc.p(p, 280))
-                scroll:addChild(scoreLabel, 1024)
-                scoreLabel:runAction(cc.Sequence:create(cc.Spawn:create(
+                local bub = cc.Label:createWithTTF(globalTTFConfig(36), eu.name)
+                bub:setPosition(cc.p(p, 280))
+                scroll:addChild(bub, 1024)
+                bub:runAction(cc.Sequence:create(cc.Spawn:create(
                     cc.EaseSineOut:create(cc.MoveBy:create(1.4, cc.p(0, 60))),
                     cc.FadeOut:create(2)),
-                    cc.CallFunc:create(function() scoreLabel:removeFromParent() end)))
+                    cc.CallFunc:create(function() bub:removeFromParent() end)))
                 i = i - 1
             end
             i = i + 1
@@ -201,6 +218,16 @@ function Gameplay.boot(self, parent, gameOverCallback)
     construct:runAction(cc.EaseElasticOut:create(
         cc.MoveBy:create(Gameplay.sunnyMoveDur, cc.p(0, SunnyMenu.rayRadius)), 0.6))
     parent:addChild(construct)
+    
+    scoreLabel = ScoreLabel:create()
+    scoreLabel:setAnchorPoint(cc.p(1, 1))
+    scoreLabel:setPosition(cc.p(
+        size.width + scoreLabel:getContentSize().width - Gameplay.scoreLabelYPadding,
+        size.height - Gameplay.scoreLabelXPadding))
+    --scoreLabel:setPosition(cc.p(200, 200))
+    parent:addChild(scoreLabel)
+    scoreLabel:runAction(cc.EaseElasticOut:create(
+        cc.MoveBy:create(Gameplay.scoreLabelMoveDur, cc.p(-scoreLabel:getContentSize().width, 0)), 0.8))
     
     local curWave = 1
     WaveToast:show(parent, 1)
@@ -236,6 +263,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
                 cclog('Wave #%d ended, coming in %d seconds', curWave, waveData['rest'])
                 scheduleOnce(parent, createOneEnemy, waveData['rest'])
                 curWave = curWave + 1
+                theBall:inc_multiplier()
                 scheduleOnce(parent,
                     function() WaveToast:show(parent, curWave) end, waveData['rest'])
                 waveData = AMPERE.WAVES.get(curWave)
