@@ -295,8 +295,8 @@ function Gameplay.boot(self, parent, gameOverCallback)
         cc.MoveBy:create(Gameplay.scoreLabelMoveDur, cc.p(0, -mulLabel:getContentSize().height)), 0.8))
     
     curWave = 1
-    WaveToast:show(parent, 1)
-    waveData = AMPERE.WAVES.get(1)
+    WaveToast:show(parent, curWave)
+    waveData = AMPERE.WAVES.get(curWave)
     local function createOneEnemy()
         isResting = false
         -- Generate parametres

@@ -36,20 +36,17 @@ MoveRotate90* MoveRotate90::clone(void) const
 
 void MoveRotate90::startWithTarget(Node *target)
 {
-    CCLOG("MoveRotate90::startWithTarget(Node *) begin");
     ActionInterval::startWithTarget(target);
     _startPosition = target->getPosition();
     Point deltaP = _startPosition - _origin;
-    CCLOG("MoveRotate90::startWithTarget(Node *) Line -2");
     _startAngle = atan2f(deltaP.y, deltaP.x);
-    CCLOG("MoveRotate90::startWithTarget(Node *) end");
 }
 
+// WARNING: This can not be used yet.
+// Anybody improves this?
 MoveRotate90* MoveRotate90::reverse() const
 {
-    CCLOG("MoveRotate90::reverse() begin");
     auto ret = MoveRotate90::create(_duration, _origin, !_isClockwise);
-    CCLOG("MoveRotate90::reverse() ret = 0x%x", ret);
     if (ret) return ret;
     else return nullptr;
 }
