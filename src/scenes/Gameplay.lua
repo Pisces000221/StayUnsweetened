@@ -29,6 +29,9 @@ Gameplay.energyLabelFontSize = 45
 Gameplay.mulLabelFontSize = 48
 Gameplay.mulLabelXPadding = 460
 Gameplay.nextWaveScheduleID = 16737700  -- I didn't know what it means... Really.
+-- 10 May 2014: WHAT?!!!
+-- It's the population of Shanghai, in the maths textbook of Grade 3/4??
+-- Why do I still remember this?!!!!
 
 Gameplay.crystalBallLife = 40
 Gameplay.baseScore = 40
@@ -172,11 +175,9 @@ function Gameplay.boot(self, parent, gameOverCallback)
         cc.Director:getInstance():pushScene(PausingScene:create(
             pause_item:getAnchorPoint(), cc.p(pix, piy),
             function(choseToRestart)
-                scroll:getScheduler():setTimeScale(1)
                 if choseToRestart then gameOver()
-                else tickScheduleEntry = scroll:getScheduler():scheduleScriptFunc(tick, 0, false) end
+                else scroll:getScheduler():setTimeScale(1) end
             end))
-        scroll:getScheduler():unscheduleScriptEntry(tickScheduleEntry)
     end
 
     pause_item = SimpleMenuItemSprite:create('pause', pauseCallback)
