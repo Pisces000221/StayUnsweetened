@@ -77,6 +77,7 @@ local function scheduleOnce(parent, func, delay, id)
         for i = 1, #scheduleOnceEntries do
             if scheduleOnceEntries[i] == entry then
                 scheduleOnceEntries[i] = nil
+                break
             end
         end
     end
@@ -94,11 +95,10 @@ local function scheduleImmediately(parent, id)
     for i = 1, #scheduleOnceEntries do
         if scheduleOnceEntries[i] == entry then
             scheduleOnceEntries[i] = nil
+            break
         end
     end
-    cclogtable(IDs[id])
-    local func = IDs[id].CALLBACK
-    func()
+    IDs[id].CALLBACK()
     IDs[id] = nil
 end
 
@@ -117,12 +117,15 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local energyBall = crystal_ball.new(Gameplay.baseEnergy, Gameplay.initialScoreMul)
     enableScheduleOnce()
     
+    -- Hack: see frameworks/runtime-src/Classes/tolua/tolua_SchedulerEx.cpp
+    scroll:setScheduler(newScheduler())
+    
     local nextWave      -- implement later
     -- We have to implement this here
     -- 'Cause if not, our lovely registerScriptTapHandler will raise an error.
     local gameOver = function()
-        parent:getScheduler():unscheduleScriptEntry(tickScheduleEntry)
-        stopAllScheduleOnce(parent)
+        scroll:getScheduler():unscheduleScriptEntry(tickScheduleEntry)
+        stopAllScheduleOnce(scroll)
         -- reset display
         pause_item:runAction(cc.EaseElasticIn:create(
             cc.MoveBy:create(Gameplay.pauseMenuGetOutDur,
@@ -165,13 +168,15 @@ function Gameplay.boot(self, parent, gameOverCallback)
     
     local pauseCallback = function()
         local pix, piy = pause_item:getPosition()
+        scroll:getScheduler():setTimeScale(0)
         cc.Director:getInstance():pushScene(PausingScene:create(
             pause_item:getAnchorPoint(), cc.p(pix, piy),
             function(choseToRestart)
+                scroll:getScheduler():setTimeScale(1)
                 if choseToRestart then gameOver()
-                else tickScheduleEntry = parent:getScheduler():scheduleScriptFunc(tick, 0, false) end
+                else tickScheduleEntry = scroll:getScheduler():scheduleScriptFunc(tick, 0, false) end
             end))
-        parent:getScheduler():unscheduleScriptEntry(tickScheduleEntry)
+        scroll:getScheduler():unscheduleScriptEntry(tickScheduleEntry)
     end
 
     pause_item = SimpleMenuItemSprite:create('pause', pauseCallback)
@@ -241,7 +246,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
         for i = 1, #props do props[i].UNIT:update(dt) end
     end
     -- hello.lua (75)
-    tickScheduleEntry = parent:getScheduler():scheduleScriptFunc(tick, 0, false)
+    tickScheduleEntry = scroll:getScheduler():scheduleScriptFunc(tick, 0, false)
     
     -- Add the construction menu
     construct = SunnyMenu:create(
@@ -331,14 +336,14 @@ function Gameplay.boot(self, parent, gameOverCallback)
             end
         end
         -- Ready to create next one
-        scheduleOnce(parent, createOneEnemy, AMPERE.WAVES.delay[enemyType])
+        scheduleOnce(scroll, createOneEnemy, AMPERE.WAVES.delay[enemyType])
     end
     createOneEnemy()
     
     nextWave = function()
         if isResting then scheduleImmediately(parent, Gameplay.nextWaveScheduleID); return; end
         cclog('Wave #%d ended, coming in %d seconds', curWave, waveData['rest'])
-        scheduleOnce(parent,
+        scheduleOnce(scroll,
             function() createOneEnemy(); WaveToast:show(parent, curWave) end,
             waveData['rest'], Gameplay.nextWaveScheduleID)
         curWave = curWave + 1
