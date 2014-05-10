@@ -8,7 +8,7 @@ StartupScene = {}
 StartupScene.backToStartDur = 1.2
 StartupScene.ballFadeOutDur = 0.5
 StartupScene.parallaxBGRate = { [1] = 0.6, [2] = 0.35 }
-StartupScene.BGExtraWidth = 800
+StartupScene.BGExtraWidth = 2400    -- it's enough, I think?
 StartupScene.titleYPadding = 24
 StartupScene.titleFadeDur = 0.9
 StartupScene.iconMenuPadding = 10
@@ -33,11 +33,11 @@ function StartupScene.create()
     local ground_bg = BackgroundRepeater:create(AMPERE.MAPSIZE + StartupScene.BGExtraWidth * 2, 'ground', cc.p(0, 1))
     ground_bg:setPosition(cc.p(-StartupScene.BGExtraWidth, Gameplay.groundYOffset))
     local parallax_bg = cc.ParallaxNode:create()
-    parallax_bg:setPosition(cc.p(-StartupScene.BGExtraWidth, Gameplay.groundYOffset * 2))
+    parallax_bg:setPosition(cc.p(-StartupScene.BGExtraWidth, Gameplay.groundYOffset))
     for i = 1, #StartupScene.parallaxBGRate do
         parallax_bg:addChild(BackgroundRepeater:create(
             AMPERE.MAPSIZE + StartupScene.BGExtraWidth * 2, 'parallax_bg_' .. i, cc.p(0, 0)),
-            i, cc.p(StartupScene.parallaxBGRate[i], 0.5), cc.p(0, 0))
+            i, cc.p(StartupScene.parallaxBGRate[i], 1), cc.p(0, 0))
     end
     scroll:addChild(parallax_bg, 20)
     scroll:addChild(ground_bg, 20)

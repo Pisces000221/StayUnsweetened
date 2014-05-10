@@ -5,6 +5,7 @@ require 'src/gameplay/crystal_ball'
 require 'src/gameplay/waves'
 require 'src/data/set'
 require 'src/widgets/ScoreLabel'
+require 'src/widgets/ScrollZoomer'
 require 'src/widgets/SimpleMenuItemSprite'
 require 'src/widgets/SunnyMenu'
 require 'src/widgets/WaveToast'
@@ -109,6 +110,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local size = cc.Director:getInstance():getVisibleSize()
     local menu, pause_item
     local scroll = parent:getChildByTag(Gameplay.scrollTag)
+    local zoomer = ScrollZoomer:create(scroll, Gameplay.groundYOffset)
     local enemies = set.new()
     local props = set.new()
     local tickScheduleEntry = 0
@@ -122,6 +124,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     
     -- Hack: see frameworks/runtime-src/Classes/tolua/tolua_SchedulerEx.cpp
     scroll:setScheduler(newScheduler())
+    parent:addChild(zoomer)
     
     local nextWave      -- implement later
     -- We have to implement this here
@@ -129,6 +132,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local gameOver = function()
         scroll:getScheduler():unscheduleScriptEntry(tickScheduleEntry)
         stopAllScheduleOnce(scroll)
+        zoomer:removeFromParent()
         -- reset display
         pause_item:runAction(cc.EaseElasticIn:create(
             cc.MoveBy:create(Gameplay.pauseMenuGetOutDur,

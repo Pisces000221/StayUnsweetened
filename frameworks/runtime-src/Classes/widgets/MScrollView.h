@@ -28,9 +28,9 @@ public:
     void disableTouching() { _eventDispatcher->pauseEventListenersForTarget(this); }
 
     inline void startRefreshing()
-    { _is_refreshing = true; Director::getInstance()->getScheduler()->scheduleSelector(refresh_selector, this, 0, false); }
+    { _is_refreshing = true; Director::getInstance()->getScheduler()->schedule(refresh_selector, this, 0, false); }
     inline void stopRefreshing()
-    { _is_refreshing = false; Director::getInstance()->getScheduler()->unscheduleSelector(refresh_selector, this); }
+    { _is_refreshing = false; Director::getInstance()->getScheduler()->unschedule(refresh_selector, this); }
     inline bool isRefreshing()
     { return _is_refreshing; }
 protected:
