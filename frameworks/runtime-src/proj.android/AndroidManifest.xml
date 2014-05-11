@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.Pisces000221.StayUnsweetened"
+      package="org.pisces000221.stayunsweetened"
       android:versionCode="1"
       android:versionName="1.0">
 
@@ -10,7 +10,7 @@
     <application android:label="@string/app_name"
                  android:icon="@drawable/icon">
 
-        <activity android:name="org.cocos2dx.lua.Cocos2dxActivity"
+        <activity android:name="org.cocos2dx.lua.AppActivity"
                   android:label="@string/app_name"
                   android:screenOrientation="landscape"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen"

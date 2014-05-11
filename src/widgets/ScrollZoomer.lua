@@ -1,6 +1,5 @@
 require 'Cocos2d'
 require 'src/global'
-require 'src/widgets/SimpleMenuItemSprite'
 
 ScrollZoomer = {}
 ScrollZoomer.doubleTapMaxTime = 0.1

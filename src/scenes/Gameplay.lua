@@ -13,7 +13,6 @@ require 'src/scenes/PausingScene'
 
 Gameplay = {}
 Gameplay.scrollTag = 12138
-Gameplay.groundYOffset = 80
 Gameplay.pauseButtonPadding = cc.p(10, 10)
 Gameplay.pauseMenuGetOutDur = 0.6
 Gameplay.menuRemoveDelay = Gameplay.pauseMenuGetOutDur
@@ -51,10 +50,10 @@ Gameplay.constructionTypes =
     { [1] = 'chocolate', [2] = 'torch', [3] = 'cane' }
 
 local function posForCharacter(ch, x)
-    return cc.p(x, Gameplay.groundYOffset + ch:getAnchorPointInPoints().y)
+    return cc.p(x, StartupScene.groundYOffset + ch:getAnchorPointInPoints().y)
 end
 local function posYForCharacter(ch, x)
-    return Gameplay.groundYOffset + ch:getAnchorPointInPoints().y
+    return StartupScene.groundYOffset + ch:getAnchorPointInPoints().y
 end
 
 local isScheduleOnceEnabled = true
@@ -110,7 +109,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local size = cc.Director:getInstance():getVisibleSize()
     local menu, pause_item
     local scroll = parent:getChildByTag(Gameplay.scrollTag)
-    local zoomer = ScrollZoomer:create(scroll, Gameplay.groundYOffset)
+    local zoomer = ScrollZoomer:create(scroll, StartupScene.groundYOffset)
     local enemies = set.new()
     local props = set.new()
     local tickScheduleEntry = 0

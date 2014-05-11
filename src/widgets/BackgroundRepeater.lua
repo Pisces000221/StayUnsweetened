@@ -9,14 +9,15 @@ function BackgroundRepeater.create(self, width, frame, anchor)
     layer:setContentSize(cc.size(width, size.height))
     
     local frameWidth = globalImageWidth(frame)
-    local curp = 0
+    local curp, ct = 0, 0
     while curp < width do
         local sprite = globalSprite(frame)
         if math.random(2) == 1 then sprite:setFlippedX(true) end
         sprite:setAnchorPoint(anchor)
         sprite:setPosition(cc.p(curp, 0))
-        layer:addChild(sprite)
-        curp = curp + frameWidth
+        layer:addChild(sprite, ct)
+        curp = curp + frameWidth - 6
+        ct = ct + 1
     end
     return layer
 end
