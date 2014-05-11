@@ -5,6 +5,5 @@ frameworks/runtime-src/proj.android/gen
 frameworks/runtime-src/proj.android/libs
 frameworks/runtime-src/proj.android/obj
 frameworks/cocos2d-x
-build
 linux-build
 runtime

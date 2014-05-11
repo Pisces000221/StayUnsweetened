@@ -12,7 +12,8 @@ LOCAL_SRC_FILES := stay-unsweetened/main.cpp \
                    ../../Classes/widgets/MScrollView.cpp \
                    ../../Classes/kineticroll/kc_linearscroll.c \
                    ../../Classes/tolua/tolua_MoveRotate90.cpp \
-                   ../../Classes/tolua/tolua_MScrollView.cpp
+                   ../../Classes/tolua/tolua_MScrollView.cpp \
+                   ../../Classes/tolua/tolua_SchedulerEx.cpp
 
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../Classes
