@@ -17,7 +17,7 @@ function ScrollZoomer.create(self, scroll, anchorY)
     local layer = cc.Layer:create()
     
     local INFP = cc.p(-self.doubleTapMaxDist, -self.doubleTapMaxDist)
-    local lastTime = 0
+    local lastTime = -self.doubleTapMaxTime
     local lastPos = INFP
     local zoomed = false
     local needZoom = false
@@ -26,20 +26,22 @@ function ScrollZoomer.create(self, scroll, anchorY)
         if zoomed then
             zoomed = false
             local px = ss.width * location.x / size.width - size.width / 2
+            scroll:stopAllActions()
             scroll:runAction(cc.EaseSineInOut:create(cc.Spawn:create(
                 cc.ScaleTo:create(self.zoomDur, 1),
                 cc.MoveTo:create(self.zoomDur,
                     -- keep in bounds
                     cc.p(-math.max(0, math.min(px, ss.width - size.width)), 0))
             )))
-            return true
         elseif os.clock() - lastTime <= self.doubleTapMaxTime
           and cc.pGetDistance(location, lastPos) <= self.doubleTapMaxDist then
             -- One more shot, another round
             needZoom = true
+            lastTime = -self.doubleTapMaxTime
+        else
+            lastTime = os.clock()
+            lastPos = location
         end
-        lastTime = os.clock()
-        lastPos = location
         return true
     end
     
@@ -47,6 +49,7 @@ function ScrollZoomer.create(self, scroll, anchorY)
         if needZoom then
             needZoom = false
             local scale = size.width / ss.width
+            scroll:stopRefreshing()     -- #6: I've got the key!
             scroll:runAction(cc.EaseSineInOut:create(cc.Spawn:create(
                 cc.ScaleTo:create(self.zoomDur, scale),
                 cc.MoveTo:create(self.zoomDur,
