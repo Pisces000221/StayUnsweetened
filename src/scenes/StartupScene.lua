@@ -22,6 +22,8 @@ StartupScene.iconMenuActionIntv = 0.2
 function StartupScene.create()
     local scene = cc.Scene:create()
     local size = cc.Director:getInstance():getVisibleSize()
+    -- prevent starting two games when tapping TOO fast on the phone
+    local gameStarted = false
     
     scene:addChild(Sky:create())
     
@@ -113,6 +115,7 @@ function StartupScene.create()
             cc.FadeOut:create(0)))
     end
     local backCallback = function()
+        gameStarted = false
         scroll:stopRefreshing()
         scroll:disableTouching()
         scroll:runAction(cc.Sequence:create(
@@ -125,6 +128,8 @@ function StartupScene.create()
             cc.CallFunc:create(showStart)))
     end
     local startCallback = function()
+        if gameStarted then return end
+        gameStarted = true
         scroll:enableTouching()
         scroll:runAction(cc.Sequence:create(
             cc.CallFunc:create(activateCrystalBall),

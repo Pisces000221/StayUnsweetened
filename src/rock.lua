@@ -25,6 +25,11 @@ local function main()
         cclog('UNABLE TO DEBUG UNDER THIS PLATFORM...')
     end
     
+    -- check if is running on a laptop
+    _G['ON_LAPTOP'] = platform == cc.PLATFORM_OS_LINUX
+      or platform == cc.PLATFORM_OS_MAC or platform == cc.PLATFORM_OS_WINDOWS
+    _G['ON_PORTABLE'] = not _G['ON_LAPTOP']
+    
     -- load sprite frames
     cc.SpriteFrameCache:getInstance():addSpriteFrames('ss.plist')
     -- run

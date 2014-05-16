@@ -2,8 +2,13 @@ require 'Cocos2d'
 require 'src/global'
 
 ScrollZoomer = {}
-ScrollZoomer.doubleTapMaxTime = 0.1
-ScrollZoomer.doubleTapMaxDist = 20
+if _G['ON_LAPTOP'] then
+    ScrollZoomer.doubleTapMaxDist = 10
+    ScrollZoomer.doubleTapMaxTime = 0.1
+else    -- on mobile phones
+    ScrollZoomer.doubleTapMaxDist = 50
+    ScrollZoomer.doubleTapMaxTime = 0.3
+end
 ScrollZoomer.zoomDur = 0.2
 
 function ScrollZoomer.create(self, scroll, anchorY)
