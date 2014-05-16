@@ -130,10 +130,17 @@
                 <key>rotated</key>
                 <false/>
             </dict>
+            <key>arrow</key>
+            <dict>
+                <key>frame</key>
+                <string>{{0,663},{36,64}}</string>
+                <key>rotated</key>
+                <false/>
+            </dict>
             <key>torch_body</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,663},{18,156}}</string>
+                <string>{{37,663},{18,156}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>

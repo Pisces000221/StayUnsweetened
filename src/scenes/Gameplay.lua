@@ -32,6 +32,9 @@ Gameplay.nextWaveScheduleID = 16737700  -- I didn't know what it means... Really
 -- 10 May 2014: WHAT?!!!
 -- It's the population of Shanghai, in the maths textbook of Grade 3/4??
 -- Why do I still remember this?!!!!
+Gameplay.pointerFontSize = 28
+Gameplay.pointerXPadding = 12
+Gameplay.pointerFadeOutDur = 0.3
 
 Gameplay.crystalBallLife = 40
 Gameplay.baseScore = 40
@@ -109,17 +112,33 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local size = cc.Director:getInstance():getVisibleSize()
     local menu, pause_item
     local scroll = parent:getChildByTag(Gameplay.scrollTag)
-    local zoomer = ScrollZoomer:create(scroll, StartupScene.groundYOffset)
+    local zoomer
     local enemies = set.new()
     local props = set.new()
     local tickScheduleEntry = 0
     local tick
     local construct         -- The menu to display construction options
     local scoreLabel, energyLabel, mulLabel
+    local enemyPtr = { [1] = { label = nil, arrow = nil }, [2] = { label = nil, arrow = nil } }
     local curWave, waveData, isResting = false
     local scoreBall = crystal_ball.new(Gameplay.baseScore, Gameplay.initialScoreMul)
     local energyBall = crystal_ball.new(Gameplay.baseEnergy, Gameplay.initialScoreMul)
+    -- Actions used by enemy pointers
+    local pointerInAction = cc.FadeIn:create(Gameplay.pointerFadeOutDur)
+    local pointerOutAction = cc.FadeOut:create(Gameplay.pointerFadeOutDur)
+    pointerInAction:retain(); pointerOutAction:retain();
     enableScheduleOnce()
+    
+    local showAllPointers = function() for i = 1, 2 do
+        enemyPtr[i].label:runAction(pointerInAction:clone())
+        enemyPtr[i].arrow:runAction(pointerInAction:clone())
+    end end
+    local hideAllPointers = function() for i = 1, 2 do
+        enemyPtr[i].label:runAction(pointerOutAction:clone())
+        enemyPtr[i].arrow:runAction(pointerOutAction:clone())
+    end end
+    zoomer = ScrollZoomer:create(scroll,
+        StartupScene.groundYOffset, hideAllPointers, showAllPointers)
     
     -- Hack: see frameworks/runtime-src/Classes/tolua/tolua_SchedulerEx.cpp
     scroll:setScheduler(newScheduler())
@@ -133,6 +152,11 @@ function Gameplay.boot(self, parent, gameOverCallback)
         stopAllScheduleOnce(scroll)
         zoomer:removeFromParent()
         -- reset display
+        for i = 1, 2 do
+            enemyPtr[i].label:removeFromParent()
+            enemyPtr[i].arrow:removeFromParent()
+        end
+        pointerInAction:release(); pointerOutAction:release()
         pause_item:runAction(cc.EaseElasticIn:create(
             cc.MoveBy:create(Gameplay.pauseMenuGetOutDur,
             cc.p(0, pause_item:getContentSize().height + Gameplay.pauseButtonPadding.y)), 0.8))
@@ -192,7 +216,55 @@ function Gameplay.boot(self, parent, gameOverCallback)
     menu:setPosition(cc.p(0, 0))
     parent:addChild(menu)
     
+    -- create enemy warners (enemyPtr)
+    for i = 1, 2 do
+        enemyPtr[i].label = globalLabel('0', Gameplay.pointerFontSize)
+        parent:addChild(enemyPtr[i].label, 177)
+        enemyPtr[i].label.isZero = false
+        enemyPtr[i].arrow = globalSprite('arrow')
+        enemyPtr[i].arrow:setAnchorPoint(cc.p(0, 0))
+        enemyPtr[i].arrow:setPosition(cc.p(0, 0))
+        enemyPtr[i].arrow:setFlippedX(i == 2)
+        parent:addChild(enemyPtr[i].arrow, 177)
+    end
+    local arrowWidth = globalImageWidth('arrow')
+    enemyPtr[1].label:setPosition(cc.p(
+        Gameplay.pointerXPadding + arrowWidth, size.height / 2))
+    enemyPtr[1].label:setAnchorPoint(cc.p(0, 0.5))
+    enemyPtr[1].arrow:setAnchorPoint(cc.p(0, 0.5))
+    enemyPtr[1].arrow:setPosition(cc.p(Gameplay.pointerXPadding, size.height / 2))
+    enemyPtr[2].label:setPosition(cc.p(
+        size.width - Gameplay.pointerXPadding - arrowWidth - 6, size.height / 2))
+    enemyPtr[2].label:setAnchorPoint(cc.p(1, 0.5))
+    enemyPtr[2].arrow:setAnchorPoint(cc.p(1, 0.5))
+    enemyPtr[2].arrow:setPosition(cc.p(size.width - Gameplay.pointerXPadding, size.height / 2))
+    local function updatePointers()
+        local P = scroll:getPositionX()
+        local LB, RB = -P, size.width - P
+        local C = { [1] = 0, [2] = 0 }
+        local P0
+        for i = 1, #enemies do
+            P0 = enemies[i].UNIT:position()
+            if P0 < LB then C[1] = C[1] + 1
+            elseif P0 > RB then C[2] = C[2] + 1 end
+        end
+        for i = 1, 2 do if C[i] > 0 then
+            enemyPtr[i].label:setString(C[i])
+            if enemyPtr[i].label.isZero then
+                enemyPtr[i].label:runAction(pointerInAction:clone())
+                enemyPtr[i].arrow:runAction(pointerInAction:clone())
+                enemyPtr[i].label.isZero = false
+            end
+        elseif not enemyPtr[i].label.isZero then
+            enemyPtr[i].label:runAction(pointerOutAction:clone())
+            enemyPtr[i].arrow:runAction(pointerOutAction:clone())
+            enemyPtr[i].label.isZero = true
+        end end
+    end
+    
     tick = function(dt)
+        -- update enemy warners / pointers
+        updatePointers()
         -- update score
         scoreBall:update(dt)
         energyBall:update(dt)
@@ -273,7 +345,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     construct:setPosition(cc.p(0, -SunnyMenu.rayRadius))
     construct:runAction(cc.EaseElasticOut:create(
         cc.MoveBy:create(Gameplay.sunnyMoveDur, cc.p(0, SunnyMenu.rayRadius)), 0.6))
-    parent:addChild(construct)
+    parent:addChild(construct, 99)
     
     -- Display score
     scoreLabel = ScoreLabel:create(Gameplay.scoreLabelFontSize, Gameplay.scoreLabelMaxDigits)

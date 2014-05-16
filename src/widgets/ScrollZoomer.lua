@@ -11,7 +11,7 @@ else    -- on mobile phones
 end
 ScrollZoomer.zoomDur = 0.2
 
-function ScrollZoomer.create(self, scroll, anchorY)
+function ScrollZoomer.create(self, scroll, anchorY, goCallback, comeCallback)
     local size = cc.Director:getInstance():getVisibleSize()
     local ss = scroll:getContentSize()
     local layer = cc.Layer:create()
@@ -33,6 +33,7 @@ function ScrollZoomer.create(self, scroll, anchorY)
                     -- keep in bounds
                     cc.p(-math.max(0, math.min(px, ss.width - size.width)), 0))
             )))
+            if comeCallback then comeCallback() end
         elseif os.clock() - lastTime <= self.doubleTapMaxTime
           and cc.pGetDistance(location, lastPos) <= self.doubleTapMaxDist then
             -- One more shot, another round
@@ -59,6 +60,7 @@ function ScrollZoomer.create(self, scroll, anchorY)
                 cc.MoveTo:create(self.zoomDur,
                     cc.p(-(ss.width - size.width) / 2, anchorY * 2 - size.height / 2))
             )))
+            if goCallback then goCallback() end
             zoomed = true
         end
     end

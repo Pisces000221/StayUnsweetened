@@ -25,7 +25,8 @@ function StartupScene.create()
     -- prevent starting two games when tapping TOO fast on the phone
     local gameStarted = false
     
-    scene:addChild(Sky:create())
+    local sky = Sky:create()
+    scene:addChild(sky, -1)
     
     local titleSprite = globalSprite('game_title')
     titleSprite:setAnchorPoint(cc.p(0.5, 1))
