@@ -49,7 +49,11 @@ function ScrollZoomer.create(self, scroll, anchorY)
         if needZoom then
             needZoom = false
             local scale = size.width / ss.width
-            scroll:stopRefreshing()     -- #6: I've got the key!
+            scroll:runAction(cc.Sequence:create(
+                cc.DelayTime:create(0),     -- wait for one frame
+                cc.CallFunc:create(function()
+                    scroll:stopRefreshing() -- #6: I've got the key!
+                end)))
             scroll:runAction(cc.EaseSineInOut:create(cc.Spawn:create(
                 cc.ScaleTo:create(self.zoomDur, scale),
                 cc.MoveTo:create(self.zoomDur,

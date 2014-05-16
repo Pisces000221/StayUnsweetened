@@ -11,6 +11,7 @@ SUCROSE = SUCROSE or {}
 require 'src/gameplay/sucrose/chocolate'
 require 'src/gameplay/sucrose/cane'
 require 'src/gameplay/sucrose/cube'
+require 'src/gameplay/sucrose/jelly'
 
 SUCROSE.create = function(name, isGoingLeft)
     isGoingLeft = isGoingLeft or false
