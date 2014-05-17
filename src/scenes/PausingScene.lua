@@ -32,7 +32,6 @@ function PausingScene.create(self, anchor, pos, callback)
     bgSprite:removeFromParent()
     bgSprite:setAnchorPoint(cc.p(0, 0))
     bgSprite:setPosition(cc.p(0, 0))
-    bgSprite:setScale(0.99999)
     bgSprite:setFlippedY(true)
     scene:addChild(texture:getSprite())
     bgSprite:runAction(cc.TintTo:create(

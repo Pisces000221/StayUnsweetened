@@ -11,6 +11,7 @@ StartupScene.ballFadeOutDur = 0.5
 StartupScene.parallaxBGRate = { [1] = 0.6, [2] = 0.35 }
 StartupScene.BGExtraWidth = 2400    -- it's enough, I think?
 StartupScene.groundYOffset = 90
+StartupScene.groundColour = cc.c3b(203, 126, 35)
 StartupScene.parallaxYOffset = 75
 StartupScene.titleYPadding = 24
 StartupScene.titleFadeDur = 0.9
@@ -43,13 +44,17 @@ function StartupScene.create()
     local groundHeight = globalImageHeight('ground')
     local ugroundHeight = globalImageHeight('underground')
     local uground_bg_container = cc.Layer:create()
-    local ugoundDepth =
-        math.floor(StartupScene.groundYOffset * AMPERE.MAPSIZE
-          / size.width / ugroundHeight) + 1
+    local uground_totHeight = StartupScene.groundYOffset +
+        StartupScene.groundYOffset * AMPERE.MAPSIZE / size.width
+    local ugoundDepth = math.floor(uground_totHeight / ugroundHeight) + 2
+    local maxWidth = AMPERE.MAPSIZE + StartupScene.BGExtraWidth * 2
+    local earthPur = puritySprite(maxWidth, uground_totHeight, StartupScene.groundColour)
+    earthPur:setAnchorPoint(cc.p(0, 1))
+    earthPur:setPosition(cc.p(-StartupScene.BGExtraWidth, StartupScene.groundYOffset - groundHeight))
+    uground_bg_container:addChild(earthPur, -1)
     for i = 1, ugoundDepth do
-        local uground_bg = BackgroundRepeater:create(
-            AMPERE.MAPSIZE + StartupScene.BGExtraWidth * 2, 'underground', cc.p(0, 1))
-        uground_bg:setPosition(cc.p(-StartupScene.BGExtraWidth, (1-i) * ugroundHeight))
+        local uground_bg = BackgroundRepeater:create(maxWidth, 'underground', cc.p(0, 1))
+        uground_bg:setPosition(cc.p(-StartupScene.BGExtraWidth, (2-i) * ugroundHeight - groundHeight))
         uground_bg_container:addChild(uground_bg, i)
     end
     local parallax_bg = cc.ParallaxNode:create()
