@@ -33,6 +33,7 @@ Gameplay.nextWaveScheduleID = 16737700  -- I didn't know what it means... Really
 -- It's the population of Shanghai, in the maths textbook of Grade 3/4??
 -- Why do I still remember this?!!!!
 Gameplay.pointerFontSize = 28
+Gameplay.pointerOpacity = 192
 Gameplay.pointerXPadding = 12
 Gameplay.pointerFadeOutDur = 0.3
 
@@ -121,21 +122,24 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local scoreLabel, energyLabel, mulLabel
     local enemyPtr = { [1] = { label = nil, arrow = nil }, [2] = { label = nil, arrow = nil } }
     local curWave, waveData, isResting = false
+    local pointerVisible = true
     local scoreBall = crystal_ball.new(Gameplay.baseScore, Gameplay.initialScoreMul)
     local energyBall = crystal_ball.new(Gameplay.baseEnergy, Gameplay.initialScoreMul)
     -- Actions used by enemy pointers
-    local pointerInAction = cc.FadeIn:create(Gameplay.pointerFadeOutDur)
-    local pointerOutAction = cc.FadeOut:create(Gameplay.pointerFadeOutDur)
+    local pointerInAction = cc.FadeTo:create(Gameplay.pointerFadeOutDur, Gameplay.pointerOpacity)
+    local pointerOutAction = cc.FadeTo:create(Gameplay.pointerFadeOutDur, 0)
     pointerInAction:retain(); pointerOutAction:retain();
     enableScheduleOnce()
     
     local showAllPointers = function() for i = 1, 2 do
         enemyPtr[i].label:runAction(pointerInAction:clone())
         enemyPtr[i].arrow:runAction(pointerInAction:clone())
+        pointerVisible = true
     end end
     local hideAllPointers = function() for i = 1, 2 do
         enemyPtr[i].label:runAction(pointerOutAction:clone())
         enemyPtr[i].arrow:runAction(pointerOutAction:clone())
+        pointerVisible = false
     end end
     zoomer = ScrollZoomer:create(scroll,
         StartupScene.groundYOffset, hideAllPointers, showAllPointers)
@@ -152,10 +156,14 @@ function Gameplay.boot(self, parent, gameOverCallback)
         stopAllScheduleOnce(scroll)
         zoomer:removeFromParent()
         -- reset display
-        for i = 1, 2 do
-            enemyPtr[i].label:removeFromParent()
-            enemyPtr[i].arrow:removeFromParent()
-        end
+        hideAllPointers()
+        -- Maybe we can use scheduleOnce instead?
+        enemyPtr[1].label:runAction(cc.Sequence:create(
+            cc.DelayTime:create(pointerOutAction:getDuration()),
+            cc.CallFunc:create(function() for i = 1, 2 do
+                enemyPtr[i].label:removeFromParent()
+                enemyPtr[i].arrow:removeFromParent()
+            end end)))
         pointerInAction:release(); pointerOutAction:release()
         pause_item:runAction(cc.EaseElasticIn:create(
             cc.MoveBy:create(Gameplay.pauseMenuGetOutDur,
@@ -214,7 +222,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     pause_item:setOpacity(PausingScene.iconOpacity)
     menu = cc.Menu:create(pause_item)
     menu:setPosition(cc.p(0, 0))
-    parent:addChild(menu)
+    parent:addChild(menu, 108)
     
     -- create enemy warners (enemyPtr)
     for i = 1, 2 do
@@ -239,17 +247,28 @@ function Gameplay.boot(self, parent, gameOverCallback)
     enemyPtr[2].arrow:setAnchorPoint(cc.p(1, 0.5))
     enemyPtr[2].arrow:setPosition(cc.p(size.width - Gameplay.pointerXPadding, size.height / 2))
     local function updatePointers()
+        if not pointerVisible then return end
         local P = scroll:getPositionX()
         local LB, RB = -P, size.width - P
         local C = { [1] = 0, [2] = 0 }
-        local P0
+        local MIND = { [1] = AMPERE.MAPSIZE, [2] = AMPERE.MAPSIZE }
+        local P0, DIR
         for i = 1, #enemies do
             P0 = enemies[i].UNIT:position()
-            if P0 < LB then C[1] = C[1] + 1
-            elseif P0 > RB then C[2] = C[2] + 1 end
+            if P0 < LB then DIR = 1
+            elseif P0 > RB then DIR = 2
+            else DIR = 0 end
+            if DIR ~= 0 then
+                C[DIR] = C[DIR] + 1
+                local DIST = math.abs(AMPERE.MAPSIZE / 2 - P0)
+                if MIND[DIR] > DIST then MIND[DIR] = DIST end
+            end
         end
         for i = 1, 2 do if C[i] > 0 then
             enemyPtr[i].label:setString(C[i])
+            local R = MIND[i] / (AMPERE.MAPSIZE / 2 + AMPERE.EXTRAMAPSIZE)
+            if R >= 0.5 then enemyPtr[i].arrow:setColor(cc.c3b(255, 255, R * 255))
+            else enemyPtr[i].arrow:setColor(cc.c3b(255, R * 510, R * 255)) end
             if enemyPtr[i].label.isZero then
                 enemyPtr[i].label:runAction(pointerInAction:clone())
                 enemyPtr[i].arrow:runAction(pointerInAction:clone())
