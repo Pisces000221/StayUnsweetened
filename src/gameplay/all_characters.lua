@@ -37,6 +37,7 @@ end
 PROPS = PROPS or {}
 
 require 'src/gameplay/props/torch'
+require 'src/gameplay/props/cloud'
 
 PROPS.create = function(name)
     local ret = PROPS[name]:create()

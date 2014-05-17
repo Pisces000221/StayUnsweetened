@@ -7,13 +7,14 @@ local fireTag = 1314520
 PROPS['torch'] = {
     charID = 1035369,
     bodySpriteFrame = 'torch_body',
-    fireSpriteFrame = 'torch_fire',
+    cost = 20,
     lifetime = 30,
     initialForce = { [FORCE_HEAT] = 350, [FORCE_FLOOD] = 0 },
     initialRadius = 400,
     create = function(self, isGoingLeft)
         local ret = globalSprite(self.bodySpriteFrame)
         ret:setAnchorPoint(cc.p(0.5, 0))
+        ret.propPositionY = 0
         local lightener = cc.ParticleFire:createWithTotalParticles(30)
         lightener:setEmitterMode(cc.PARTICLE_MODE_RADIUS)
         lightener:setStartRadius(0)

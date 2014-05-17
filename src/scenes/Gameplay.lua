@@ -44,6 +44,7 @@ Gameplay.crystalBallLife = 40
 Gameplay.baseScore = 40
 Gameplay.baseEnergy = 3 / 8
 Gameplay.initialScoreMul = 8
+Gameplay.initialEnergy = 30
 
 Gameplay.jumpDur = 4
 Gameplay.jumpHeight = 100
@@ -52,15 +53,19 @@ Gameplay.reacherJumpCount = 9
 Gameplay.reacherYMoveSpeed = 120
 
 Gameplay.constructionOptions =
-    { [0] = 'cube', [1] = 'chocolate', [2] = 'torch_body', [3] = 'cane' }
+    { [0] = 'cube', [1] = 'cloud', [2] = 'torch_body', [3] = 'cane' }
 Gameplay.constructionTypes =
-    { [1] = 'chocolate', [2] = 'torch', [3] = 'cane' }
+    { [1] = 'cloud', [2] = 'torch', [3] = 'cane' }
 
 local function posForCharacter(ch, x)
-    return cc.p(x, StartupScene.groundYOffset + ch:getAnchorPointInPoints().y)
+    if ch.propPositionY then
+        return cc.p(x, StartupScene.groundYOffset + ch:getAnchorPointInPoints().y + ch.propPositionY)
+    else return cc.p(x, StartupScene.groundYOffset + ch:getAnchorPointInPoints().y) end
 end
 local function posYForCharacter(ch, x)
-    return StartupScene.groundYOffset + ch:getAnchorPointInPoints().y
+    if ch.propPositionY then
+        return StartupScene.groundYOffset + ch:getAnchorPointInPoints().y + ch.propPositionY
+    else return StartupScene.groundYOffset + ch:getAnchorPointInPoints().y end
 end
 
 local isScheduleOnceEnabled = true
@@ -303,6 +308,8 @@ function Gameplay.boot(self, parent, gameOverCallback)
         end end
     end
     
+    -- give out 30 energy at the beginning
+    energyBall:get_score(Gameplay.initialEnergy)
     tick = function(dt)
         -- update enemy warners / pointers
         updatePointers()
@@ -371,6 +378,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
         Gameplay.constructionOptions,
         function(idx, p)
             local name = Gameplay.constructionTypes[idx]
+            if energyBall.score < PROPS[name].cost then return end
             local ch = PROPS.create(name)
             local p0 = -scroll:getPosition()    -- will only get X here
             local anchor = ch:getAnchorPoint()
@@ -383,6 +391,8 @@ function Gameplay.boot(self, parent, gameOverCallback)
                 cc.MoveTo:create(Gameplay.propDropDur, posForCharacter(ch, p0 + p.x + anchor.x))))
             props:append(ch)
             scroll:addChild(ch, 80)
+            -- POD?
+            energyBall:get_score(-PROPS[name].cost)
         end)
     construct:setPosition(cc.p(0, -SunnyMenu.rayRadius))
     construct:runAction(cc.EaseElasticOut:create(
