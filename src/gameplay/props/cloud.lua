@@ -7,8 +7,8 @@ local rainTag = 1314521
 PROPS['cloud'] = {
     charID = 1035370,
     bodySpriteFrame = 'cloud',
-    cost = 15,
-    lifetime = 18,
+    cost = 30,
+    lifetime = 25,
     initialForce = { [FORCE_HEAT] = 0, [FORCE_FLOOD] = 350 },
     initialRadius = nil,
     create = function(self, isGoingLeft)

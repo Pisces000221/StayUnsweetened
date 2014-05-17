@@ -9,7 +9,7 @@ SUCROSE['chocolate'] = {
     velocity = 100,
     maxHP = 1200,
     multiplier = { [FORCE_HEAT] = 1, [FORCE_FLOOD] = 1 },
-    bonus = 15,
+    bonus = 9,
     create = function(self, isGoingLeft)
         local ret = globalSprite(self.spriteFrame)
         ret.UNIT = {}

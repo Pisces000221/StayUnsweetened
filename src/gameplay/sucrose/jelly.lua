@@ -9,7 +9,7 @@ SUCROSE['jelly'] = {
     velocity = 20,
     maxHP = 3600,
     multiplier = { [FORCE_HEAT] = 1.2, [FORCE_FLOOD] = 0.8 },
-    bonus = 25,
+    bonus = 12,
     actionTimeRate = 0.6,   -- 60% of time, the sprite is animated
     create = function(self, isGoingLeft)
         local ret = globalSprite(self.spriteFrame)

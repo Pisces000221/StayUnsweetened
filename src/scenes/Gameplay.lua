@@ -245,8 +245,8 @@ function Gameplay.boot(self, parent, gameOverCallback)
                 end
                 local cur_value_got = value *
                     math.sin(total_dt / Gameplay.bonusGetDur * 0.5 * math.pi) - value_got
-                scoreBall:get_score(cur_value_got * Gameplay.baseScore / 2)
-                energyBall:get_score(cur_value_got * Gameplay.baseEnergy / 2)
+                scoreBall:get_score(cur_value_got * Gameplay.baseScore)
+                energyBall:get_score(cur_value_got * Gameplay.baseEnergy)
                 value_got = cur_value_got + value_got
             end, 0, false)
     end

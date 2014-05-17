@@ -9,7 +9,7 @@ SUCROSE['cube'] = {
     velocity = 100,
     maxHP = 1200,
     multiplier = { [FORCE_HEAT] = 1, [FORCE_FLOOD] = 1 },
-    bonus = 19,
+    bonus = 7,
     actionTimeRate = 0.6,   -- 60% of time, the sprite is animated
     create = function(self, isGoingLeft)
         local ret = globalSprite(self.spriteFrame)

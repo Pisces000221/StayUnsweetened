@@ -9,7 +9,7 @@ SUCROSE['candyfloss'] = {
     velocity = 200,
     maxHP = 1500,
     multiplier = { [FORCE_HEAT] = 1.3, [FORCE_FLOOD] = 1 },
-    bonus = 36,
+    bonus = 30,
     create = function(self, isGoingLeft)
         local ret = globalSprite(self.spriteFrame)
         ret.propPositionY = 240
