@@ -325,7 +325,8 @@ function Gameplay.boot(self, parent, gameOverCallback)
             local eu = enemies[i].UNIT
             local e = enemies[i]
             if eu.isGoingLeft and p < (AMPERE.MAPSIZE + AMPERE.BALLWIDTH) / 2
-              or not eu.isGoingLeft and p > (AMPERE.MAPSIZE - AMPERE.BALLWIDTH) / 2 then
+              or not eu.isGoingLeft and p > (AMPERE.MAPSIZE - AMPERE.BALLWIDTH) / 2
+              and not enemies[i].UNIT.friendly then
                 -- let it jump!
                 e:stopAllActions()
                 local deltaY = e:getPositionY() - posYForCharacter(e)
@@ -467,6 +468,13 @@ function Gameplay.boot(self, parent, gameOverCallback)
         scheduleOnce(scroll, createOneEnemy, AMPERE.WAVES.delay[enemyType])
     end
     createOneEnemy()
+    local isGoingLeft = math.random(2) == 1
+    local cf = SUCROSE.create('candyfloss', isGoingLeft)
+    local p0 = -AMPERE.EXTRAMAPSIZE
+    if isGoingLeft then p0 = AMPERE.MAPSIZE + AMPERE.EXTRAMAPSIZE end
+    cf:setPosition(posForCharacter(cf, p0))
+    enemies:append(cf)
+    scroll:addChild(cf, 90)
     
     nextWave = function()
         if isResting then scheduleImmediately(parent, Gameplay.nextWaveScheduleID); return; end

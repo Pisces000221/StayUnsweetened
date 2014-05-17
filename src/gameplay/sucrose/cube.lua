@@ -4,7 +4,7 @@ require 'src/global'
 SUCROSE = SUCROSE or {}
 
 SUCROSE['cube'] = {
-    charID = 1,
+    charID = 3,
     spriteFrame = 'cube',
     velocity = 100,
     maxHP = 1200,

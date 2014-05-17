@@ -18,7 +18,7 @@ PROPS['cloud'] = {
         local ret = globalSprite(self.bodySpriteFrame)
         local body_rect = globalImageRect(self.bodySpriteFrame)
         ret:setAnchorPoint(cc.p(0.5, 0))
-        local posY = math.random(220, 320)
+        local posY = math.random(280, 360)
         ret.propPositionY = posY
         ret:runAction(cc.FadeOut:create(self.lifetime * 3))
         local rain = cc.ParticleRain:create()
