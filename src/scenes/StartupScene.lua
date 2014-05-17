@@ -39,6 +39,7 @@ function StartupScene.create()
     scroll:setContentSize(cc.size(AMPERE.MAPSIZE, size.height))
     scroll:setPositionX(-AMPERE.MAPSIZE / 2 + size.width / 2)
     scene:addChild(scroll, 0, Gameplay.scrollTag)
+    -- create ground
     local ground_bg = BackgroundRepeater:create(AMPERE.MAPSIZE + StartupScene.BGExtraWidth * 2, 'ground', cc.p(0, 1))
     ground_bg:setPosition(cc.p(-StartupScene.BGExtraWidth, StartupScene.groundYOffset))
     local groundHeight = globalImageHeight('ground')
@@ -48,15 +49,18 @@ function StartupScene.create()
         StartupScene.groundYOffset * AMPERE.MAPSIZE / size.width
     local ugoundDepth = math.floor(uground_totHeight / ugroundHeight) + 2
     local maxWidth = AMPERE.MAPSIZE + StartupScene.BGExtraWidth * 2
+    -- the background of the earth
     local earthPur = puritySprite(maxWidth, uground_totHeight, StartupScene.groundColour)
     earthPur:setAnchorPoint(cc.p(0, 1))
     earthPur:setPosition(cc.p(-StartupScene.BGExtraWidth, StartupScene.groundYOffset - groundHeight))
     uground_bg_container:addChild(earthPur, -1)
+    -- the 'icing on the earth'
     for i = 1, ugoundDepth do
         local uground_bg = BackgroundRepeater:create(maxWidth, 'underground', cc.p(0, 1))
         uground_bg:setPosition(cc.p(-StartupScene.BGExtraWidth, (2-i) * ugroundHeight - groundHeight))
         uground_bg_container:addChild(uground_bg, i)
     end
+    -- parallax nodes
     local parallax_bg = cc.ParallaxNode:create()
     parallax_bg:setPosition(cc.p(-StartupScene.BGExtraWidth, StartupScene.parallaxYOffset))
     for i = 1, #StartupScene.parallaxBGRate do

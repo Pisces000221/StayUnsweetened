@@ -8,15 +8,12 @@ using namespace cocos2d;
 
 Sprite *puritySprite(int width, int height, Color3B colour)
 {
-    CCLOG("puritySprite %d x %d @ (%d, %d, %d)", width, height, colour.r, colour.g, colour.b);
     int colour_num = (colour.b << 16) + (colour.g << 8) + colour.r;
-    //int *a = new int [width * height];
-    //memset(a, colour_num, width * height);
     Texture2D *texture = new Texture2D();
-    //texture->initWithData(a, width * height,
-    //    Texture2D::PixelFormat::RGB888, width, height, Size(width, height));
+    // CCFontAtlas.cpp (65)
     texture->initWithData(&colour_num, 1, Texture2D::PixelFormat::RGB888, 1, 1, Size(1, 1));
     Sprite *sprite = Sprite::createWithTexture(texture);
+    // A little trick: create a 1x1 sprite and scale it
     sprite->setScaleX(width);
     sprite->setScaleY(height);
     return sprite;
