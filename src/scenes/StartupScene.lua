@@ -4,6 +4,7 @@ require 'src/widgets/BackgroundRepeater'
 require 'src/widgets/SimpleMenuItemSprite'
 require 'src/widgets/Sky'
 require 'src/scenes/Gameplay'
+require 'src/scenes/AboutScene'
 
 StartupScene = {}
 StartupScene.backToStartDur = 1.2
@@ -157,7 +158,8 @@ function StartupScene.create()
     options_item = SimpleMenuItemSprite:create('options', function() end)
     options_item:setAnchorPoint(cc.p(0, 0))
     options_item:setPosition(cc.p(0, -options_item:getContentSize().height))
-    about_item = SimpleMenuItemSprite:create('about', function() end)
+    about_item = SimpleMenuItemSprite:create('about', function()
+        cc.Director:getInstance():pushScene(AboutScene:create()) end)
     about_item:setAnchorPoint(cc.p(0, 0))
     about_item:setPosition(cc.p(globalImageWidth('options') + StartupScene.iconMenuPadding, -about_item:getContentSize().height))
     local icon_menu = cc.Menu:create(options_item, about_item)
