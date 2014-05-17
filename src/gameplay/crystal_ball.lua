@@ -12,7 +12,6 @@ function crystal_ball.new(base_score, multiplier)
     end
     
     ret.dec_base_score = function(self, rate)
-        --print('decrement: ', self.base_score * rate)
         self.cur_base_score = self.cur_base_score - self.base_score * rate
     end
     
@@ -24,8 +23,12 @@ function crystal_ball.new(base_score, multiplier)
         return self.cur_base_score / self.base_score
     end
     
+    ret.get_score = function(self, value)
+        self.score = self.score + value
+    end
+    
     ret.update = function(self, delta_time)
-        ret.score = ret.score + self.cur_base_score * self.multiplier * delta_time
+        self:get_score(self.cur_base_score * self.multiplier * delta_time)
     end
     
     return ret

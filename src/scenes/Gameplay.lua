@@ -16,7 +16,7 @@ Gameplay.scrollTag = 12138
 Gameplay.pauseButtonPadding = cc.p(10, 10)
 Gameplay.pauseMenuGetOutDur = 0.6
 Gameplay.menuRemoveDelay = Gameplay.pauseMenuGetOutDur
-Gameplay.sunnyMoveDur = 1
+Gameplay.sunnyMoveDur = 0.5
 Gameplay.propDropDur = 1
 Gameplay.scoreLabelMoveDur = 1
 Gameplay.scoreLabelXPadding = 15
@@ -36,6 +36,9 @@ Gameplay.pointerFontSize = 28
 Gameplay.pointerOpacity = 192
 Gameplay.pointerXPadding = 12
 Gameplay.pointerFadeOutDur = 0.3
+Gameplay.bonusBubbleMoveDur = 1.4
+Gameplay.bonusBubbleFadeDur = 2
+Gameplay.bonusGetDur = 1
 
 Gameplay.crystalBallLife = 40
 Gameplay.baseScore = 40
@@ -224,6 +227,25 @@ function Gameplay.boot(self, parent, gameOverCallback)
     menu:setPosition(cc.p(0, 0))
     parent:addChild(menu, 108)
     
+    local getBonus = function(value)
+        local total_dt = 0
+        local entry = 0
+        local value_got = 0
+        entry = scroll:getScheduler():scheduleScriptFunc(
+            function(dt)
+                total_dt = total_dt + dt
+                if total_dt >= Gameplay.bonusGetDur then
+                    total_dt = Gameplay.bonusGetDur
+                    scroll:getScheduler():unscheduleScriptEntry(entry)
+                end
+                local cur_value_got = value *
+                    math.sin(total_dt / Gameplay.bonusGetDur * 0.5 * math.pi) - value_got
+                scoreBall:get_score(cur_value_got * Gameplay.baseScore / 2)
+                energyBall:get_score(cur_value_got * Gameplay.baseEnergy / 2)
+                value_got = cur_value_got + value_got
+            end, 0, false)
+    end
+    
     -- create enemy warners (enemyPtr)
     for i = 1, 2 do
         enemyPtr[i].label = globalLabel('0', Gameplay.pointerFontSize)
@@ -327,12 +349,13 @@ function Gameplay.boot(self, parent, gameOverCallback)
                 enemies:remove(i)
                 if #enemies == 0 then nextWave(); return; end
                 -- debug-use only: display score
-                local bub = cc.Label:createWithTTF(globalTTFConfig(36), eu.name)
+                local bub = cc.Label:createWithTTF(globalTTFConfig(36), '+' .. eu.bonus)
                 bub:setPosition(cc.p(p, 280))
                 scroll:addChild(bub, 1024)
+                getBonus(eu.bonus)
                 bub:runAction(cc.Sequence:create(cc.Spawn:create(
-                    cc.EaseSineOut:create(cc.MoveBy:create(1.4, cc.p(0, 60))),
-                    cc.FadeOut:create(2)),
+                    cc.EaseSineOut:create(cc.MoveBy:create(Gameplay.bonusBubbleMoveDur, cc.p(0, 60))),
+                    cc.FadeOut:create(Gameplay.bonusBubbleFadeDur)),
                     cc.CallFunc:create(function() bub:removeFromParent() end)))
                 i = i - 1
             end
