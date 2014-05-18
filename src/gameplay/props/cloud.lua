@@ -45,6 +45,9 @@ PROPS['cloud'] = {
         rain:setTag(rainTag)
         rain.entry = entry
         ret:addChild(rain)
+        ret:runAction(cc.RepeatForever:create(cc.Sequence:create(
+            cc.EaseSineInOut:create(cc.MoveBy:create(2, cc.p(0, 16))),
+            cc.EaseSineInOut:create(cc.MoveBy:create(2, cc.p(0, -16))))))
         ret.UNIT = { lifetime = self.lifetime }
         return ret
     end,

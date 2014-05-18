@@ -39,31 +39,38 @@
                 <key>rotated</key>
                 <false/>
             </dict>
+            <key>lantern</key>
+            <dict>
+                <key>frame</key>
+                <string>{{807,0},{168,168}}</string>
+                <key>rotated</key>
+                <false/>
+            </dict>
             <key>parallax_bg_1</key>
             <dict>
                 <key>frame</key>
-                <string>{{807,0},{155,204}}</string>
+                <string>{{671,181},{155,204}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>parallax_bg_2</key>
             <dict>
                 <key>frame</key>
-                <string>{{671,205},{151,62}}</string>
+                <string>{{827,169},{151,62}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>jelly</key>
             <dict>
                 <key>frame</key>
-                <string>{{671,268},{144,108}}</string>
+                <string>{{671,386},{144,108}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>underground</key>
             <dict>
                 <key>frame</key>
-                <string>{{823,205},{128,128}}</string>
+                <string>{{827,232},{128,128}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
@@ -77,28 +84,28 @@
             <key>candyfloss</key>
             <dict>
                 <key>frame</key>
-                <string>{{671,377},{120,120}}</string>
+                <string>{{827,361},{120,120}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>balloon</key>
             <dict>
                 <key>frame</key>
-                <string>{{816,334},{108,168}}</string>
+                <string>{{0,512},{108,168}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>chocolate</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,512},{108,108}}</string>
+                <string>{{129,491},{108,108}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>cube</key>
             <dict>
                 <key>frame</key>
-                <string>{{129,491},{108,108}}</string>
+                <string>{{0,681},{108,108}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
@@ -112,56 +119,56 @@
             <key>menu_prop_bg</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,621},{96,96}}</string>
+                <string>{{109,600},{96,96}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>pause</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,718},{96,96}}</string>
+                <string>{{238,469},{96,96}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>restart</key>
             <dict>
                 <key>frame</key>
-                <string>{{97,621},{96,96}}</string>
+                <string>{{0,790},{96,96}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>about</key>
             <dict>
                 <key>frame</key>
-                <string>{{181,407},{72,72}}</string>
+                <string>{{238,566},{72,72}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>options</key>
             <dict>
                 <key>frame</key>
-                <string>{{238,480},{72,72}}</string>
+                <string>{{335,469},{72,72}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>cane</key>
             <dict>
                 <key>frame</key>
-                <string>{{238,553},{60,142}}</string>
+                <string>{{109,697},{60,142}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>arrow</key>
             <dict>
                 <key>frame</key>
-                <string>{{311,469},{27,48}}</string>
+                <string>{{181,407},{27,48}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>torch_body</key>
             <dict>
                 <key>frame</key>
-                <string>{{339,469},{18,156}}</string>
+                <string>{{206,600},{18,156}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>

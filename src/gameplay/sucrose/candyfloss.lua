@@ -17,8 +17,9 @@ SUCROSE['candyfloss'] = {
         ret.UNIT = { friendly = true }
         local distX = self.velocity
         if isGoingLeft then distX = -distX end
-        ret:runAction(cc.RepeatForever:create(
-            cc.MoveBy:create(1, cc.p(distX, 0))))
+        ret:runAction(cc.RepeatForever:create(cc.Sequence:create(
+            cc.MoveBy:create(1.3, cc.p(distX * 1.3, 50)),
+            cc.MoveBy:create(1.3, cc.p(distX * 1.3, -50)))))
         local balloon = globalSprite('balloon')
         balloon:setAnchorPoint(cc.p(0.5, 0))
         balloon:setPosition(cc.p(rsize.width / 2, rsize.height - 30))

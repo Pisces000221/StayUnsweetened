@@ -53,9 +53,9 @@ Gameplay.reacherJumpCount = 9
 Gameplay.reacherYMoveSpeed = 120
 
 Gameplay.constructionOptions =
-    { [0] = 'cube', [1] = 'cloud', [2] = 'torch_body', [3] = 'cane' }
+    { [0] = 'cube', [1] = 'cloud', [2] = 'torch_body', [3] = 'lantern' }
 Gameplay.constructionTypes =
-    { [1] = 'cloud', [2] = 'torch', [3] = 'cane' }
+    { [1] = 'cloud', [2] = 'torch', [3] = 'lantern' }
 
 local function posForCharacter(ch, x)
     if ch.propPositionY then
@@ -324,9 +324,10 @@ function Gameplay.boot(self, parent, gameOverCallback)
             local p = enemies[i].UNIT:position()
             local eu = enemies[i].UNIT
             local e = enemies[i]
-            if eu.isGoingLeft and p < (AMPERE.MAPSIZE + AMPERE.BALLWIDTH) / 2
-              or not eu.isGoingLeft and p > (AMPERE.MAPSIZE - AMPERE.BALLWIDTH) / 2
-              and not enemies[i].UNIT.friendly then
+            if eu.friendly and (p > AMPERE.MAPSIZE or p < 0) then enemies:remove(i) end
+            if (eu.isGoingLeft and p < (AMPERE.MAPSIZE + AMPERE.BALLWIDTH) / 2
+              or not eu.isGoingLeft and p > (AMPERE.MAPSIZE - AMPERE.BALLWIDTH) / 2)
+              and not eu.friendly then
                 -- let it jump!
                 e:stopAllActions()
                 local deltaY = e:getPositionY() - posYForCharacter(e)
