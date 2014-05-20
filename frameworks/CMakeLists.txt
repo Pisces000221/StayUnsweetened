@@ -50,6 +50,8 @@ set(GAME_SRC
   runtime-src/Classes/tolua/tolua_MoveRotate90.cpp
   runtime-src/Classes/tolua/tolua_SchedulerEx.cpp
   runtime-src/Classes/tolua/tolua_PuritySprite.cpp
+  runtime-src/Classes/updater/updater.cpp
+  runtime-src/Classes/updater/UpdateScene.cpp
 )
 
 set(COCOS2D_ROOT ${CMAKE_SOURCE_DIR}/cocos2d-x)

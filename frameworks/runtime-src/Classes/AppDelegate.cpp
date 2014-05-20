@@ -3,6 +3,8 @@
 #include "SimpleAudioEngine.h"
 #include "cocos2d.h"
 #include "tolua/tolua_all.h"
+#include "updater/updater.h"
+#include "updater/UpdateScene.h"
 
 using namespace cocos2d;
 using namespace CocosDenshion;
@@ -29,12 +31,15 @@ bool AppDelegate::applicationDidFinishLaunching()
     glview->setDesignResolutionSize(960, 640, ResolutionPolicy::SHOW_ALL);
     director->setDisplayStats(true);
     director->setAnimationInterval(1.0 / 60);
+    //updater::checkUpdate();
+    //updater::downloadFile("https://raw.githubusercontent.com/Pisces000221/StayUnsweetened/master/.gitignore", "/home/lsq/cocos2d-x/stay-unsweetened/StayUnsweetened/runtime/linux/1.txt");
 
-	auto engine = LuaEngine::getInstance();
+	/*auto engine = LuaEngine::getInstance();
 	ScriptEngineManager::getInstance()->setScriptEngine(engine);
     CCLOG("Binding classes to Lua...");
     tolua_bindAllManual(engine->getLuaStack()->getLuaState());
-	engine->executeScriptFile("src/rock.lua");
+	engine->executeScriptFile("src/rock.lua");*/
+    director->runWithScene(UpdateScene::scene());
 
     return true;
 }
