@@ -45,6 +45,7 @@ Gameplay.baseScore = 40
 Gameplay.baseEnergy = 3 / 8
 Gameplay.initialScoreMul = 8
 Gameplay.initialEnergy = 30
+Gameplay.candyflossInterval = 60
 
 Gameplay.jumpDur = 4
 Gameplay.jumpHeight = 100
@@ -124,7 +125,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local zoomer
     local enemies = set.new()
     local props = set.new()
-    local tickScheduleEntry = 0
+    local tickScheduleEntry, cfScheduleEntry = 0, 0
     local tick
     local construct         -- The menu to display construction options
     local scoreLabel, energyLabel, mulLabel
@@ -160,8 +161,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     -- We have to implement this here
     -- 'Cause if not, our lovely registerScriptTapHandler will raise an error.
     local gameOver = function()
-        scroll:getScheduler():unscheduleScriptEntry(tickScheduleEntry)
-        stopAllScheduleOnce(scroll)
+        stopScheduler(scroll:getScheduler())
         zoomer:removeFromParent()
         -- reset display
         hideAllPointers()
@@ -178,27 +178,27 @@ function Gameplay.boot(self, parent, gameOverCallback)
             cc.p(0, pause_item:getContentSize().height + Gameplay.pauseButtonPadding.y)), 0.8))
         menu:runAction(cc.Sequence:create(
             cc.DelayTime:create(Gameplay.menuRemoveDelay),
-            cc.CallFunc:create(function() menu:removeFromParent() end)))
+            cc.RemoveSelf:create()))
         construct:runAction(cc.Sequence:create(cc.EaseElasticIn:create(
             cc.MoveBy:create(Gameplay.sunnyMoveDur, cc.p(0, -SunnyMenu.rayRadius)), 1),
-            cc.CallFunc:create(function() construct:removeFromParent() end)))
+            cc.RemoveSelf:create()))
         local labelAction = cc.EaseElasticIn:create(
             cc.MoveBy:create(Gameplay.scoreLabelMoveDur,
             cc.p(scoreLabel:getContentSize().width, 0)), 0.8)
         scoreLabel:runAction(cc.Sequence:create(labelAction,
-            cc.CallFunc:create(function() scoreLabel:removeFromParent() end)))
+            cc.RemoveSelf:create()))
         energyLabel:runAction(cc.Sequence:create(labelAction:clone(),
-            cc.CallFunc:create(function() energyLabel:removeFromParent() end)))
+            cc.RemoveSelf:create()))
         mulLabel:runAction(cc.Sequence:create(cc.EaseElasticIn:create(
             cc.MoveBy:create(Gameplay.scoreLabelMoveDur,
             cc.p(0, mulLabel:getContentSize().height + Gameplay.energyLabelYPadding)), 0.8),
-            cc.CallFunc:create(function() mulLabel:removeFromParent() end)))
+            cc.RemoveSelf:create()))
         -- reset data
         while #props > 0 do
             local p = props:pop()
             p:runAction(cc.Sequence:create(
                 cc.DelayTime:create(p:destroy()),
-                cc.CallFunc:create(function() p:removeFromParent() end)))
+                cc.RemoveSelf:create()))
         end
         while #enemies > 0 do
             local e = enemies:pop()
@@ -206,7 +206,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
             if e.UNIT:position() < AMPERE.MAPSIZE / 2 then dx = -dx end
             e:runAction(cc.Sequence:create(
                 cc.MoveBy:create(1, cc.p(dx, 0)),
-                cc.CallFunc:create(function() e:removeFromParent() end)))
+                cc.RemoveSelf:create()))
         end
         gameOverCallback()
         cclog('Game Over')
@@ -324,7 +324,12 @@ function Gameplay.boot(self, parent, gameOverCallback)
             local p = enemies[i].UNIT:position()
             local eu = enemies[i].UNIT
             local e = enemies[i]
-            if eu.friendly and (p > AMPERE.MAPSIZE or p < 0) then enemies:remove(i) end
+            if eu.friendly and
+             (p > AMPERE.MAPSIZE + AMPERE.EXTRAMAPSIZE
+              or p < -AMPERE.EXTRAMAPSIZE) then
+                enemies[i]:removeFromParent()
+                enemies:remove(i)
+            end
             if (eu.isGoingLeft and p < (AMPERE.MAPSIZE + AMPERE.BALLWIDTH) / 2
               or not eu.isGoingLeft and p > (AMPERE.MAPSIZE - AMPERE.BALLWIDTH) / 2)
               and not eu.friendly then
@@ -335,7 +340,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
                     cc.MoveBy:create(deltaY / Gameplay.reacherYMoveSpeed, cc.p(0, -deltaY)),
                     cc.JumpBy:create(Gameplay.jumpDur, cc.p(0, 0), Gameplay.jumpHeight, Gameplay.reacherJumpCount),
                     cc.FadeOut:create(Gameplay.reacherFadeOutDur),
-                    cc.CallFunc:create(function() e:removeFromParent() end)))
+                    cc.RemoveSelf:create()))
                 print('reacher isgoingleft: ', enemies[i].UNIT.isGoingLeft)
                 print('reacher position: ', p)
                 scoreBall:dec_base_score(1 / Gameplay.crystalBallLife)
@@ -365,7 +370,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
                 bub:runAction(cc.Sequence:create(cc.Spawn:create(
                     cc.EaseSineOut:create(cc.MoveBy:create(Gameplay.bonusBubbleMoveDur, cc.p(0, 60))),
                     cc.FadeOut:create(Gameplay.bonusBubbleFadeDur)),
-                    cc.CallFunc:create(function() bub:removeFromParent() end)))
+                    cc.RemoveSelf:create()))
                 i = i - 1
             end
             i = i + 1
@@ -469,13 +474,18 @@ function Gameplay.boot(self, parent, gameOverCallback)
         scheduleOnce(scroll, createOneEnemy, AMPERE.WAVES.delay[enemyType])
     end
     createOneEnemy()
-    local isGoingLeft = math.random(2) == 1
-    local cf = SUCROSE.create('candyfloss', isGoingLeft)
-    local p0 = -AMPERE.EXTRAMAPSIZE
-    if isGoingLeft then p0 = AMPERE.MAPSIZE + AMPERE.EXTRAMAPSIZE end
-    cf:setPosition(posForCharacter(cf, p0))
-    enemies:append(cf)
-    scroll:addChild(cf, 90)
+
+    local createCandyfloss = function()
+        local isGoingLeft = math.random(2) == 1
+        local cf = SUCROSE.create('candyfloss', isGoingLeft)
+        local p0 = -AMPERE.EXTRAMAPSIZE
+        if isGoingLeft then p0 = AMPERE.MAPSIZE + AMPERE.EXTRAMAPSIZE end
+        cf:setPosition(posForCharacter(cf, p0))
+        enemies:append(cf)
+        scroll:addChild(cf, 90)
+    end
+    cfScheduleEntry = scroll:getScheduler():scheduleScriptFunc(
+        createCandyfloss, Gameplay.candyflossInterval, false)
     
     nextWave = function()
         if isResting then scheduleImmediately(parent, Gameplay.nextWaveScheduleID); return; end
