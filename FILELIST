@@ -1,4 +1,7 @@
 -001 /src/
+0001 /src/global.lua
+0001 /src/logging.lua
+0001 /src/rock.lua
 
 -001 /src/data
 0001 /src/data/set.lua
