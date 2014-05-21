@@ -11,10 +11,12 @@ LOCAL_SRC_FILES := stay-unsweetened/main.cpp \
                    ../../Classes/actions/MoveRotate90.cpp \
                    ../../Classes/widgets/MScrollView.cpp \
                    ../../Classes/kineticroll/kc_linearscroll.c \
+                   ../../Classes/updater/updater.cpp \
                    ../../Classes/tolua/tolua_MoveRotate90.cpp \
                    ../../Classes/tolua/tolua_MScrollView.cpp \
                    ../../Classes/tolua/tolua_SchedulerEx.cpp \
-                   ../../Classes/tolua/tolua_PuritySprite.cpp
+                   ../../Classes/tolua/tolua_PuritySprite.cpp \
+                   ../../Classes/tolua/tolua_updater.cpp
 
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../Classes
