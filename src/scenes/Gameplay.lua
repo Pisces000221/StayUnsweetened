@@ -125,6 +125,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local zoomer
     local enemies = set.new()
     local props = set.new()
+    local finished_props = set.new()
     local tickScheduleEntry, cfScheduleEntry = 0, 0
     local tick
     local construct         -- The menu to display construction options
@@ -196,6 +197,12 @@ function Gameplay.boot(self, parent, gameOverCallback)
         -- reset data
         while #props > 0 do
             local p = props:pop()
+            p:runAction(cc.Sequence:create(
+                cc.DelayTime:create(p:destroy()),
+                cc.RemoveSelf:create()))
+        end
+        while #finished_props > 0 do
+            local p = finished_props:pop()
             p:runAction(cc.Sequence:create(
                 cc.DelayTime:create(p:destroy()),
                 cc.RemoveSelf:create()))
@@ -375,7 +382,17 @@ function Gameplay.boot(self, parent, gameOverCallback)
             end
             i = i + 1
         end
-        for i = 1, #props do props[i].UNIT:update(dt) end
+        i = 1
+        while i < #props do
+            local pu = props[i].UNIT
+            pu:update(dt)
+            if pu.force[FORCE_HEAT] == 0 and pu.force[FORCE_FLOOD] == 0 then
+                finished_props:append(props[i])
+                props:remove(i)
+                i = i - 1
+            end
+            i = i + 1
+        end
     end
     -- hello.lua (75)
     tickScheduleEntry = scroll:getScheduler():scheduleScriptFunc(tick, 0, false)
@@ -486,12 +503,14 @@ function Gameplay.boot(self, parent, gameOverCallback)
     end
     cfScheduleEntry = scroll:getScheduler():scheduleScriptFunc(
         createCandyfloss, Gameplay.candyflossInterval, false)
+    createCandyfloss()  -- give one out
     
     nextWave = function()
         if isResting then scheduleImmediately(parent, Gameplay.nextWaveScheduleID); return; end
         cclog('Wave #%d ended, coming in %d seconds', curWave, waveData['rest'])
+        local _curWave = curWave
         scheduleOnce(scroll,
-            function() createOneEnemy(); WaveToast:show(parent, curWave) end,
+            function() createOneEnemy(); WaveToast:show(parent, _curWave + 1) end,
             waveData['rest'], Gameplay.nextWaveScheduleID)
         curWave = curWave + 1
         isResting = true

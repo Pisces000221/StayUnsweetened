@@ -14,6 +14,7 @@ require 'src/gameplay/sucrose/cube'
 require 'src/gameplay/sucrose/jelly'
 require 'src/gameplay/sucrose/fruit'
 require 'src/gameplay/sucrose/candyfloss'
+require 'src/gameplay/sucrose/gingerbread'
 
 SUCROSE.create = function(name, isGoingLeft)
     isGoingLeft = isGoingLeft or false

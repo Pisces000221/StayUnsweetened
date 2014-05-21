@@ -31,7 +31,7 @@ PROPS['cloud'] = {
         rain:setScaleX(body_rect.width
             / cc.Director:getInstance():getVisibleSize().width)
         rain:setAnchorPoint(cc.p(0.5, 1))
-        rain:setPosition(cc.p(body_rect.width / 2, body_rect.height / 2))
+        rain:setPosition(cc.p(body_rect.width / 2, body_rect.height * 0.382))
         local total_dt = 0
         local entry = 0
         entry = rain:getScheduler():scheduleScriptFunc(

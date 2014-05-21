@@ -15,6 +15,7 @@ SUCROSE['jelly'] = {
         local ret = globalSprite(self.spriteFrame)
         ret:setAnchorPoint(cc.p(0.5, 0))
         ret.UNIT = {}
+        ret.propPositionY = -10
         local skewX = 30
         local actionDur = skewX / self.velocity * self.actionTimeRate / 2
         local delayTime = skewX / self.velocity * (1 - self.actionTimeRate) / 2

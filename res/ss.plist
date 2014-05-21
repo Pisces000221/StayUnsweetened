@@ -11,164 +11,178 @@
                 <key>rotated</key>
                 <false/>
             </dict>
+            <key>gingerbread_house</key>
+            <dict>
+                <key>frame</key>
+                <string>{{0,181},{288,200}}</string>
+                <key>rotated</key>
+                <false/>
+            </dict>
             <key>cloud</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,181},{280,128}}</string>
+                <string>{{0,382},{280,128}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>crystal_ball_active</key>
             <dict>
                 <key>frame</key>
-                <string>{{281,181},{194,287}}</string>
+                <string>{{289,181},{194,287}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>crystal_ball_idle</key>
             <dict>
                 <key>frame</key>
-                <string>{{476,181},{194,287}}</string>
+                <string>{{484,181},{194,287}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>constructions</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,310},{180,180}}</string>
+                <string>{{807,0},{180,180}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>lantern</key>
             <dict>
                 <key>frame</key>
-                <string>{{807,0},{168,168}}</string>
+                <string>{{679,181},{168,168}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>parallax_bg_1</key>
             <dict>
                 <key>frame</key>
-                <string>{{671,181},{155,204}}</string>
+                <string>{{848,181},{155,204}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>parallax_bg_2</key>
             <dict>
                 <key>frame</key>
-                <string>{{827,169},{151,62}}</string>
+                <string>{{679,350},{151,62}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>jelly</key>
             <dict>
                 <key>frame</key>
-                <string>{{671,386},{144,108}}</string>
-                <key>rotated</key>
-                <false/>
-            </dict>
-            <key>underground</key>
-            <dict>
-                <key>frame</key>
-                <string>{{827,232},{128,128}}</string>
-                <key>rotated</key>
-                <false/>
-            </dict>
-            <key>ground</key>
-            <dict>
-                <key>frame</key>
-                <string>{{0,491},{128,20}}</string>
+                <string>{{831,386},{144,108}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>candyfloss</key>
             <dict>
                 <key>frame</key>
-                <string>{{827,361},{120,120}}</string>
+                <string>{{679,413},{142,94}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
-            <key>balloon</key>
+            <key>underground</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,512},{108,168}}</string>
+                <string>{{0,511},{128,128}}</string>
+                <key>rotated</key>
+                <false/>
+            </dict>
+            <key>ground</key>
+            <dict>
+                <key>frame</key>
+                <string>{{0,640},{128,20}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>chocolate</key>
             <dict>
                 <key>frame</key>
-                <string>{{129,491},{108,108}}</string>
+                <string>{{129,511},{108,108}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>cube</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,681},{108,108}}</string>
+                <string>{{0,661},{108,108}}</string>
+                <key>rotated</key>
+                <false/>
+            </dict>
+            <key>balloon</key>
+            <dict>
+                <key>frame</key>
+                <string>{{129,620},{106,163}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>fruit</key>
             <dict>
                 <key>frame</key>
-                <string>{{181,310},{96,96}}</string>
+                <string>{{238,511},{96,96}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>menu_prop_bg</key>
             <dict>
                 <key>frame</key>
-                <string>{{109,600},{96,96}}</string>
+                <string>{{0,770},{96,96}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>pause</key>
             <dict>
                 <key>frame</key>
-                <string>{{238,469},{96,96}}</string>
+                <string>{{238,608},{96,96}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>restart</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,790},{96,96}}</string>
-                <key>rotated</key>
-                <false/>
-            </dict>
-            <key>about</key>
-            <dict>
-                <key>frame</key>
-                <string>{{238,566},{72,72}}</string>
-                <key>rotated</key>
-                <false/>
-            </dict>
-            <key>options</key>
-            <dict>
-                <key>frame</key>
-                <string>{{335,469},{72,72}}</string>
+                <string>{{335,469},{96,96}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>cane</key>
             <dict>
                 <key>frame</key>
-                <string>{{109,697},{60,142}}</string>
+                <string>{{335,566},{86,166}}</string>
+                <key>rotated</key>
+                <false/>
+            </dict>
+            <key>about</key>
+            <dict>
+                <key>frame</key>
+                <string>{{0,867},{72,72}}</string>
+                <key>rotated</key>
+                <false/>
+            </dict>
+            <key>gingerbread_wheel</key>
+            <dict>
+                <key>frame</key>
+                <string>{{432,469},{72,72}}</string>
+                <key>rotated</key>
+                <false/>
+            </dict>
+            <key>options</key>
+            <dict>
+                <key>frame</key>
+                <string>{{97,784},{72,72}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>arrow</key>
             <dict>
                 <key>frame</key>
-                <string>{{181,407},{27,48}}</string>
+                <string>{{0,940},{27,48}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>
             <key>torch_body</key>
             <dict>
                 <key>frame</key>
-                <string>{{206,600},{18,156}}</string>
+                <string>{{236,705},{18,156}}</string>
                 <key>rotated</key>
                 <false/>
             </dict>

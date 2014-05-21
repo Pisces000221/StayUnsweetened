@@ -20,12 +20,19 @@ SUCROSE['candyfloss'] = {
         ret:runAction(cc.RepeatForever:create(cc.Sequence:create(
             cc.MoveBy:create(1.3, cc.p(distX * 1.3, 50)),
             cc.MoveBy:create(1.3, cc.p(distX * 1.3, -50)))))
+        ret:setColor(cc.c3b(math.random(216, 255),
+            math.random(216, 255), math.random(216, 255)))
         local balloon = globalSprite('balloon')
         balloon:setAnchorPoint(cc.p(0.5, 0))
-        balloon:setPosition(cc.p(rsize.width / 2, rsize.height - 30))
+        if isGoingLeft then
+            balloon:setPosition(cc.p(rsize.width / 2 - 1, rsize.height - 24))
+        else
+            balloon:setPosition(cc.p(rsize.width / 2 + 1, rsize.height - 24))
+        end
         balloon:setColor(cc.c3b(math.random(64, 255),
             math.random(64, 255), math.random(64, 255)))
-        ret:addChild(balloon, -1)
+        balloon:setFlippedX(isGoingLeft)
+        ret:addChild(balloon, 1)
         return ret
     end
 }

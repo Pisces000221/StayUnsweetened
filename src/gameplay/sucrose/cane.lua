@@ -24,6 +24,8 @@ SUCROSE['cane'] = {
                 cc.p(jumpX, 0), self.jumpHeight, 1),
             cc.DelayTime:create(actionDur * (1 - self.actionTimeRate))
         )))
+        ret:setColor(cc.c3b(math.random(243, 255),
+            math.random(243, 255), math.random(243, 255)))
         return ret
     end
 }
