@@ -5,12 +5,12 @@ require 'src/widgets/SimpleMenuItemSprite'
 SunnyMenu = {}
 SunnyMenu.rayRadius = 200
 SunnyMenu.rayOriginPadding = 76
-SunnyMenu.itemInDur = 1
-SunnyMenu.itemOutDur = 0.6
+SunnyMenu.itemInDur = 0.4
+SunnyMenu.itemOutDur = 0.3
 SunnyMenu.mainImage = 'constructions'
 SunnyMenu.itemImage = 'menu_prop_bg'
 SunnyMenu.validYBorder = 120
-SunnyMenu.cancellingFadeDur = 0.5
+SunnyMenu.cancellingFadeDur = 0.3
 SunnyMenu.cancellingOpacity = 64
 
 function SunnyMenu.create(self, images, callback)

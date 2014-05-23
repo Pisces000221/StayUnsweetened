@@ -1,0 +1,141 @@
+require 'Cocos2d'
+require 'src/global'
+require 'src/widgets/ScoreLabel'
+require 'src/scenes/Gameplay'
+
+GameOverScene = {}
+GameOverScene.backgroundTintDur = 0.5
+GameOverScene.backgroundTintWhite = 96
+--[[GameOverScene.scoreTitleFadeDur = 0.3
+GameOverScene.scoreFadeDelay = 0.3
+GameOverScene.energyTitleFadeDelay = 0.3
+GameOverScene.energyTitleFadeDur = 0.3
+GameOverScene.energyFadeDelay = 0.3]]
+GameOverScene.actionInterval = 0.3
+GameOverScene.energyConvertSpeed = 100
+GameOverScene.balloonConvertDur = 1
+
+GameOverScene.energyConvertRate = 160
+
+function GameOverScene.create(self, score, energy)
+    local scene = cc.Scene:create()
+    local size = cc.Director:getInstance():getVisibleSize()
+    local energyConvertDur = energy / GameOverScene.energyConvertSpeed
+    local convertEnergyEntry = 0
+
+    -- display background
+    local texture = cc.RenderTexture:create(size.width, size.height, cc.TEXTURE2_D_PIXEL_FORMAT_RGB_A8888)
+    texture:beginWithClear(0, 0, 0, 0)
+    cc.Director:getInstance():getRunningScene():visit()
+    texture:endToLua()
+    local bgSprite = texture:getSprite()
+    bgSprite:removeFromParent()
+    bgSprite:setAnchorPoint(cc.p(0, 0))
+    bgSprite:setPosition(cc.p(0, 0))
+    bgSprite:setFlippedY(true)
+    scene:addChild(texture:getSprite())
+    bgSprite:runAction(cc.TintTo:create(
+        GameOverScene.backgroundTintDur, GameOverScene.backgroundTintWhite,
+        GameOverScene.backgroundTintWhite, GameOverScene.backgroundTintWhite))
+
+    local score_t = globalLabel('Score: ', 68, true)
+    score_t:setAnchorPoint(cc.p(0, 0.5))
+    score_t:setPosition(cc.p(24, size.height * 0.7))
+    score_t:setOpacity(0)
+    score_t:runAction(cc.Sequence:create(
+        cc.DelayTime:create(GameOverScene.backgroundTintDur),
+        cc.FadeIn:create(GameOverScene.actionInterval)))
+    scene:addChild(score_t)
+    local score_s = ScoreLabel:create(84, Gameplay.scoreLabelMaxDigits)
+    score_s:setNumber(score)
+    score_s:setAnchorPoint(cc.p(1, 0.5))
+    score_s:setPosition(cc.p(size.width - 36, size.height * 0.7))
+    score_s:setVisible(false)
+    score_s:runAction(cc.Sequence:create(
+        cc.DelayTime:create(GameOverScene.backgroundTintDur + GameOverScene.actionInterval * 2),
+        cc.Show:create()))
+    scene:addChild(score_s)
+
+    local energy_t = globalLabel('Energy: ', 68, true)
+    energy_t:setAnchorPoint(cc.p(0, 0.5))
+    energy_t:setPosition(cc.p(24, size.height * 0.4))
+    energy_t:setOpacity(0)
+    energy_t:runAction(cc.Sequence:create(
+        cc.DelayTime:create(GameOverScene.backgroundTintDur + GameOverScene.actionInterval * 3),
+        cc.FadeIn:create(GameOverScene.actionInterval),
+        cc.DelayTime:create(energyConvertDur + GameOverScene.actionInterval + 0.8),
+        cc.FadeOut:create(GameOverScene.actionInterval)))
+    scene:addChild(energy_t)
+    local energy_s = ScoreLabel:create(84, Gameplay.energyLabelMaxDigits)
+    energy_s:setNumber(energy)
+    energy_s:setAnchorPoint(cc.p(1, 0.5))
+    energy_s:setPosition(cc.p(size.width - 36, size.height * 0.4))
+    energy_s:setVisible(false)
+    energy_s:runAction(cc.Sequence:create(
+        cc.DelayTime:create(GameOverScene.backgroundTintDur + GameOverScene.actionInterval * 5),
+        cc.Show:create(),
+        cc.DelayTime:create(energyConvertDur + GameOverScene.actionInterval + 0.8),
+        cc.Hide:create()))
+    scene:addChild(energy_s)
+
+    local energy2score = function()
+        local total_dt = -(GameOverScene.backgroundTintDur + GameOverScene.actionInterval * 6)
+        convertEnergyEntry = scene:getScheduler():scheduleScriptFunc(
+            function(dt)
+                total_dt = total_dt + dt
+                if total_dt < 0 then return end
+                if total_dt >= energyConvertDur then
+                    total_dt = energyConvertDur
+                    scene:getScheduler():unscheduleScriptEntry(convertEnergyEntry)
+                end
+                score_s:setNumber(score
+                    + total_dt / energyConvertDur * energy * GameOverScene.energyConvertRate)
+                energy_s:setNumber((1 - total_dt / energyConvertDur) * energy)
+            end, 0, false)
+    end
+    energy2score()
+
+    local balloon_t = globalLabel('Balloon: ', 68, true)
+    balloon_t:setAnchorPoint(cc.p(0, 0.5))
+    balloon_t:setPosition(cc.p(24, size.height * 0.4))
+    balloon_t:setOpacity(0)
+    balloon_t:runAction(cc.Sequence:create(
+        cc.DelayTime:create(energyConvertDur
+          + GameOverScene.backgroundTintDur + GameOverScene.actionInterval * 5 + 0.8),
+        cc.FadeIn:create(GameOverScene.actionInterval),
+        cc.DelayTime:create(GameOverScene.balloonConvertDur + 1.6),
+        cc.FadeOut:create(GameOverScene.actionInterval)))
+    scene:addChild(balloon_t)
+    local balloon_s = globalLabel('+ 0%', 84)
+    balloon_s:setAnchorPoint(cc.p(1, 0.5))
+    balloon_s:setPosition(cc.p(size.width - 36, size.height * 0.4))
+    balloon_s:setVisible(false)
+    balloon_s:runAction(cc.Sequence:create(
+        cc.DelayTime:create(energyConvertDur
+          + GameOverScene.backgroundTintDur + GameOverScene.actionInterval * 7 + 0.8),
+        cc.Show:create(),
+        cc.DelayTime:create(GameOverScene.balloonConvertDur + 1.6),
+        cc.Hide:create()))
+    scene:addChild(balloon_s)
+
+    close = function()
+        score_s:runAction(cc.Hide:create())
+        score_t:runAction(cc.FadeOut:create(0.4))
+        bgSprite:runAction(cc.TintTo:create(
+            GameOverScene.backgroundTintDur, 255, 255, 255))
+        scene:runAction(cc.Sequence:create(
+            cc.DelayTime:create(GameOverScene.backgroundTintDur),
+            cc.CallFunc:create(function()
+                cc.Director:getInstance():popScene() end)))
+        scene:getScheduler():unscheduleScriptEntry(convertEnergyEntry)
+    end
+
+    local close_item = cc.MenuItemLabel:create(globalLabel('Close', 55))
+    close_item:registerScriptTapHandler(close)
+    close_item:setPosition(cc.p(size.width / 2, size.height * 0.18))
+    local menu = cc.Menu:create(close_item)
+    menu:setPosition(cc.p(0, 0))
+    scene:addChild(menu)
+
+    return scene
+end

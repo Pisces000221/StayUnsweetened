@@ -215,7 +215,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
                 cc.MoveBy:create(1, cc.p(dx, 0)),
                 cc.RemoveSelf:create()))
         end
-        gameOverCallback()
+        gameOverCallback(scoreBall.score, energyBall.score)
         cclog('Game Over')
     end
     

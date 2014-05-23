@@ -5,6 +5,7 @@ require 'src/widgets/SimpleMenuItemSprite'
 require 'src/widgets/Sky'
 require 'src/scenes/Gameplay'
 require 'src/scenes/AboutScene'
+require 'src/scenes/GameOverScene'
 
 StartupScene = {}
 StartupScene.backToStartDur = 1.2
@@ -125,7 +126,7 @@ function StartupScene.create()
             cc.DelayTime:create(StartupScene.ballFadeOutDur),
             cc.FadeOut:create(0)))
     end
-    local backCallback = function()
+    local backCallback = function(score, energy)
         gameStarted = false
         scroll:stopRefreshing()
         scroll:disableTouching()
@@ -136,7 +137,11 @@ function StartupScene.create()
                 cc.ScaleTo:create(StartupScene.backToStartDur, 1))),
             cc.CallFunc:create(idleCrystalBall),
             cc.DelayTime:create(StartupScene.ballFadeOutDur),
-            cc.CallFunc:create(showStart)))
+            cc.CallFunc:create(showStart),
+            cc.CallFunc:create(function()
+                print('Final score: ', score, energy)
+                cc.Director:getInstance():pushScene(GameOverScene:create(score, energy))
+            end)))
     end
     local startCallback = function()
         if gameStarted then return end
