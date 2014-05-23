@@ -126,7 +126,7 @@ function StartupScene.create()
             cc.DelayTime:create(StartupScene.ballFadeOutDur),
             cc.FadeOut:create(0)))
     end
-    local backCallback = function(score, energy)
+    local backCallback = function(score, energy, balloon)
         gameStarted = false
         scroll:stopRefreshing()
         scroll:disableTouching()
@@ -139,8 +139,8 @@ function StartupScene.create()
             cc.DelayTime:create(StartupScene.ballFadeOutDur),
             cc.CallFunc:create(showStart),
             cc.CallFunc:create(function()
-                print('Final score: ', score, energy)
-                cc.Director:getInstance():pushScene(GameOverScene:create(score, energy))
+                cc.Director:getInstance():pushScene(
+                  GameOverScene:create(score, energy, balloon))
             end)))
     end
     local startCallback = function()

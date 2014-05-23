@@ -6,22 +6,17 @@ require 'src/scenes/Gameplay'
 GameOverScene = {}
 GameOverScene.backgroundTintDur = 0.5
 GameOverScene.backgroundTintWhite = 96
---[[GameOverScene.scoreTitleFadeDur = 0.3
-GameOverScene.scoreFadeDelay = 0.3
-GameOverScene.energyTitleFadeDelay = 0.3
-GameOverScene.energyTitleFadeDur = 0.3
-GameOverScene.energyFadeDelay = 0.3]]
 GameOverScene.actionInterval = 0.3
 GameOverScene.energyConvertSpeed = 100
 GameOverScene.balloonConvertDur = 1
 
 GameOverScene.energyConvertRate = 160
 
-function GameOverScene.create(self, score, energy)
+function GameOverScene.create(self, score, energy, balloon)
     local scene = cc.Scene:create()
     local size = cc.Director:getInstance():getVisibleSize()
     local energyConvertDur = energy / GameOverScene.energyConvertSpeed
-    local convertEnergyEntry = 0
+    local convertEnergyEntry, convertBalloonEntry = 0, 0
 
     -- display background
     local texture = cc.RenderTexture:create(size.width, size.height, cc.TEXTURE2_D_PIXEL_FORMAT_RGB_A8888)
@@ -106,7 +101,7 @@ function GameOverScene.create(self, score, energy)
         cc.DelayTime:create(GameOverScene.balloonConvertDur + 1.6),
         cc.FadeOut:create(GameOverScene.actionInterval)))
     scene:addChild(balloon_t)
-    local balloon_s = globalLabel('+ 0%', 84)
+    local balloon_s = globalLabel('+ ' .. balloon .. '%', 84)
     balloon_s:setAnchorPoint(cc.p(1, 0.5))
     balloon_s:setPosition(cc.p(size.width - 36, size.height * 0.4))
     balloon_s:setVisible(false)
@@ -117,6 +112,25 @@ function GameOverScene.create(self, score, energy)
         cc.DelayTime:create(GameOverScene.balloonConvertDur + 1.6),
         cc.Hide:create()))
     scene:addChild(balloon_s)
+
+    local balloon2score = function()
+        local total_dt = -(energyConvertDur + GameOverScene.backgroundTintDur
+            + GameOverScene.actionInterval * 8 + 0.8)
+        convertBalloonEntry = scene:getScheduler():scheduleScriptFunc(
+            function(dt)
+                total_dt = total_dt + dt
+                if total_dt < 0 then return end
+                if total_dt >= GameOverScene.balloonConvertDur then
+                    total_dt = GameOverScene.balloonConvertDur
+                    scene:getScheduler():unscheduleScriptEntry(convertBalloonEntry)
+                end
+                score_s:setNumber((score + energy * GameOverScene.energyConvertRate)
+                    * (1 + total_dt / GameOverScene.balloonConvertDur * balloon / 100))
+                balloon_s:setString(string.format('+ %d%%',
+                    (1 - total_dt / GameOverScene.balloonConvertDur) * balloon))
+            end, 0, false)
+    end
+    balloon2score()
 
     close = function()
         score_s:runAction(cc.Hide:create())

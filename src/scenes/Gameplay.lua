@@ -140,6 +140,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     local pointerOutAction = cc.FadeTo:create(Gameplay.pointerFadeOutDur, 0)
     pointerInAction:retain(); pointerOutAction:retain();
     enableScheduleOnce()
+    _G['BALLOON_BONUS'] = 0
     
     local showAllPointers = function() for i = 1, 2 do
         enemyPtr[i].label:runAction(pointerInAction:clone())
@@ -215,7 +216,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
                 cc.MoveBy:create(1, cc.p(dx, 0)),
                 cc.RemoveSelf:create()))
         end
-        gameOverCallback(scoreBall.score, energyBall.score)
+        gameOverCallback(scoreBall.score, energyBall.score, _G['BALLOON_BONUS'])
         cclog('Game Over')
     end
     

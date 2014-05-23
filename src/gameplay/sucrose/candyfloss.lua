@@ -32,6 +32,34 @@ SUCROSE['candyfloss'] = {
         balloon:setColor(cc.c3b(math.random(64, 255),
             math.random(64, 255), math.random(64, 255)))
         balloon:setFlippedX(isGoingLeft)
+        -- detect touches
+        balloon.bonusGot = false
+        local function onTouchBegan(touch, event)
+            local p = balloon:convertToNodeSpace(touch:getLocation())
+            local s0 = balloon:getContentSize()
+            if ret.UNIT.HP > 0 or balloon.bonusGot or
+             not cc.rectContainsPoint(cc.rect(0, 0, s0.width, s0.height), p) then
+                return false
+            end
+            local balloonBonus = math.random(3, 10)
+            balloon.bonusGot = true
+            balloon:setVisible(false)
+            local bub = globalLabel('+' .. balloonBonus .. '%', 36)
+            if balloonBonus > _G['BALLOON_BONUS'] then
+                _G['BALLOON_BONUS'] = balloonBonus
+            end
+            bub:setPosition(cc.p(ret:getPosition()))
+            ret:getParent():addChild(bub, 1024)
+            bub:runAction(cc.Sequence:create(cc.Spawn:create(
+                cc.EaseSineOut:create(cc.MoveBy:create(Gameplay.bonusBubbleMoveDur, cc.p(0, 60))),
+                cc.FadeOut:create(Gameplay.bonusBubbleFadeDur)),
+                cc.RemoveSelf:create()))
+            return true
+        end
+        local listener = cc.EventListenerTouchOneByOne:create()
+        listener:registerScriptHandler(onTouchBegan, cc.Handler.EVENT_TOUCH_BEGAN)
+        balloon:getEventDispatcher()
+            :addEventListenerWithSceneGraphPriority(listener, balloon)
         ret:addChild(balloon, 1)
         return ret
     end
