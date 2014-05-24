@@ -346,11 +346,15 @@ function Gameplay.boot(self, parent, gameOverCallback)
                 -- let it jump!
                 e:stopAllActions()
                 local deltaY = e:getPositionY() - posYForCharacter(e)
-                e:runAction(cc.Sequence:create(
-                    cc.MoveBy:create(deltaY / Gameplay.reacherYMoveSpeed, cc.p(0, -deltaY)),
-                    cc.JumpBy:create(Gameplay.jumpDur, cc.p(0, 0), Gameplay.jumpHeight, Gameplay.reacherJumpCount),
-                    cc.FadeOut:create(Gameplay.reacherFadeOutDur),
-                    cc.RemoveSelf:create()))
+                if e.getReacherAction == nil then
+                    e:runAction(cc.Sequence:create(
+                        cc.MoveBy:create(deltaY / Gameplay.reacherYMoveSpeed, cc.p(0, -deltaY)),
+                        cc.JumpBy:create(Gameplay.jumpDur, cc.p(0, 0), Gameplay.jumpHeight, Gameplay.reacherJumpCount),
+                        cc.FadeOut:create(Gameplay.reacherFadeOutDur),
+                        cc.RemoveSelf:create()))
+                else
+                    e:runAction(e:getReacherAction())
+                end
                 print('reacher isgoingleft: ', enemies[i].UNIT.isGoingLeft)
                 print('reacher position: ', p)
                 scoreBall:dec_base_score(1 / Gameplay.crystalBallLife)
@@ -370,6 +374,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
             end
             if eu.HP <= 0 then
                 enemies[i]:runAction(cc.FadeOut:create(1))
+                if enemies[i].destroy ~= nil then enemies[i]:destroy() end
                 enemies:remove(i)
                 if #enemies == 0 then nextWave(); return; end
                 -- debug-use only: display score
@@ -461,9 +466,14 @@ function Gameplay.boot(self, parent, gameOverCallback)
     mulLabel:runAction(cc.EaseElasticOut:create(
         cc.MoveBy:create(Gameplay.scoreLabelMoveDur, cc.p(0, -mulLabel:getContentSize().height)), 0.8))
     
-    curWave = 1
+    curWave = 7
     WaveToast:show(parent, curWave)
     waveData = AMPERE.WAVES.get(curWave)
+    function scroll.addToEnemy(self, e, p0)
+        e:setPosition(posForCharacter(e, p0))
+        enemies:append(e)
+        self:addChild(e, 90)
+    end
     local function createOneEnemy()
         isResting = false
         -- Generate parametres
@@ -483,9 +493,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
         local e = SUCROSE.create(enemyName, isGoingLeft)
         local p0 = -AMPERE.EXTRAMAPSIZE
         if isGoingLeft then p0 = AMPERE.MAPSIZE + AMPERE.EXTRAMAPSIZE end
-        e:setPosition(posForCharacter(e, p0))
-        enemies:append(e)
-        scroll:addChild(e, 90)
+        scroll:addToEnemy(e, p0)
         -- Update wave data (how many remaining)
         waveData[enemyName] = waveData[enemyName] - 1
         -- If the wave is ended, stop generating
@@ -507,9 +515,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
         local cf = SUCROSE.create('candyfloss', isGoingLeft)
         local p0 = -AMPERE.EXTRAMAPSIZE
         if isGoingLeft then p0 = AMPERE.MAPSIZE + AMPERE.EXTRAMAPSIZE end
-        cf:setPosition(posForCharacter(cf, p0))
-        enemies:append(cf)
-        scroll:addChild(cf, 90)
+        scroll:addToEnemy(cf, p0)
     end
     cfScheduleEntry = scroll:getScheduler():scheduleScriptFunc(
         createCandyfloss, Gameplay.candyflossInterval, false)
