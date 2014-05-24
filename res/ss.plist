@@ -172,6 +172,13 @@
                 <key>rotated</key>
                 <false/>
             </dict>
+            <key>flood_drop</key>
+            <dict>
+                <key>frame</key>
+                <string>{{290,890},{48,48}}</string>
+                <key>rotated</key>
+                <false/>
+            </dict>
             <key>arrow</key>
             <dict>
                 <key>frame</key>

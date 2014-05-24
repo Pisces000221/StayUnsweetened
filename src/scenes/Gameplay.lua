@@ -55,9 +55,9 @@ Gameplay.reacherJumpCount = 9
 Gameplay.reacherYMoveSpeed = 120
 
 Gameplay.constructionOptions =
-    { [0] = 'cube', [1] = 'cloud', [2] = 'torch_body', [3] = 'lantern' }
+    { [0] = 'cube', [1] = 'cloud', [2] = 'torch_body', [3] = 'lantern', [4] = 'flood_drop' }
 Gameplay.constructionTypes =
-    { [1] = 'cloud', [2] = 'torch', [3] = 'lantern' }
+    { [1] = 'cloud', [2] = 'torch', [3] = 'lantern', [4] = 'flood' }
 
 local function posForCharacter(ch, x)
     if ch.propPositionY then
@@ -466,7 +466,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     mulLabel:runAction(cc.EaseElasticOut:create(
         cc.MoveBy:create(Gameplay.scoreLabelMoveDur, cc.p(0, -mulLabel:getContentSize().height)), 0.8))
     
-    curWave = 7
+    curWave = 1
     WaveToast:show(parent, curWave)
     waveData = AMPERE.WAVES.get(curWave)
     function scroll.addToEnemy(self, e, p0)

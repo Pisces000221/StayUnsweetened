@@ -41,6 +41,7 @@ PROPS = PROPS or {}
 require 'src/gameplay/props/torch'
 require 'src/gameplay/props/cloud'
 require 'src/gameplay/props/lantern'
+require 'src/gameplay/props/flood'
 
 PROPS.create = function(name)
     local ret = PROPS[name]:create()
