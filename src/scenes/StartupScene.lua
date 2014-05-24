@@ -11,6 +11,8 @@ StartupScene = {}
 StartupScene.backToStartDur = 1.2
 StartupScene.ballFadeOutDur = 0.5
 StartupScene.parallaxBGRate = { [1] = 0.6, [2] = 0.35 }
+StartupScene.parallaxBGScale = { [1] = 1.4, [2] = 2 }
+StartupScene.parallaxBGDelta = { [1] = -35, [2] = 0 }
 StartupScene.BGExtraWidth = 2400    -- it's enough, I think?
 StartupScene.groundYOffset = 90
 StartupScene.groundColour = cc.c3b(203, 126, 35)
@@ -67,7 +69,9 @@ function StartupScene.create()
     parallax_bg:setPosition(cc.p(-StartupScene.BGExtraWidth, StartupScene.parallaxYOffset))
     for i = 1, #StartupScene.parallaxBGRate do
         parallax_bg:addChild(BackgroundRepeater:create(
-            AMPERE.MAPSIZE + StartupScene.BGExtraWidth * 2, 'parallax_bg_' .. i, cc.p(0, 0)),
+            AMPERE.MAPSIZE + StartupScene.BGExtraWidth * 2,
+            'parallax_bg_' .. i, cc.p(0, 0),
+            StartupScene.parallaxBGDelta[i], StartupScene.parallaxBGScale[i]),
             i, cc.p(StartupScene.parallaxBGRate[i], 1), cc.p(0, 0))
     end
     scroll:addChild(parallax_bg, 18)

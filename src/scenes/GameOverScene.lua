@@ -142,6 +142,7 @@ function GameOverScene.create(self, score, energy, balloon)
             cc.CallFunc:create(function()
                 cc.Director:getInstance():popScene() end)))
         scene:getScheduler():unscheduleScriptEntry(convertEnergyEntry)
+        scene:getScheduler():unscheduleScriptEntry(convertBalloonEntry)
     end
 
     local close_item = cc.MenuItemLabel:create(globalLabel('Close', 55))
