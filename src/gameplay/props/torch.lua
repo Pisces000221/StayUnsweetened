@@ -27,6 +27,9 @@ PROPS['torch'] = {
         lightener:runAction(cc.ScaleTo:create(self.lifetime, 0))
         lightener:setTag(fireTag)
         ret:addChild(lightener)
+        ret:runAction(cc.Sequence:create(
+            cc.DelayTime:create(self.lifetime + 5),
+            cc.CallFunc:create(function() ret:destroy() end)))
         ret.UNIT = { lifetime = self.lifetime }
         return ret
     end,
