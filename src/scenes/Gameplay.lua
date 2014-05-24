@@ -18,6 +18,7 @@ Gameplay.pauseMenuGetOutDur = 0.6
 Gameplay.menuRemoveDelay = Gameplay.pauseMenuGetOutDur
 Gameplay.sunnyMoveDur = 0.5
 Gameplay.propDropDur = 1
+Gameplay.scrollMoveSpeed = 300
 Gameplay.scoreLabelMoveDur = 1
 Gameplay.scoreLabelXPadding = 15
 Gameplay.scoreLabelYPadding = 12
@@ -181,6 +182,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
         menu:runAction(cc.Sequence:create(
             cc.DelayTime:create(Gameplay.menuRemoveDelay),
             cc.RemoveSelf:create()))
+        construct:finalize()    -- stop its scheduler
         construct:runAction(cc.Sequence:create(cc.EaseElasticIn:create(
             cc.MoveBy:create(Gameplay.sunnyMoveDur, cc.p(0, -SunnyMenu.rayRadius)), 1),
             cc.RemoveSelf:create()))
@@ -401,6 +403,13 @@ function Gameplay.boot(self, parent, gameOverCallback)
     -- Add the construction menu
     construct = SunnyMenu:create(
         Gameplay.constructionOptions,
+        function(left, dt)
+            local deltaX = dt * Gameplay.scrollMoveSpeed
+            if not left then deltaX = -deltaX end
+            local px1 = scroll:getPositionX() + deltaX
+            if px1 < -AMPERE.MAPSIZE + size.width or px1 > 0 then return end
+            scroll:setPositionX(px1)
+        end,
         function(idx, p)
             local name = Gameplay.constructionTypes[idx]
             if energyBall.score < PROPS[name].cost then return end

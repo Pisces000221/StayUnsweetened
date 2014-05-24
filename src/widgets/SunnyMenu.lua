@@ -12,8 +12,9 @@ SunnyMenu.itemImage = 'menu_prop_bg'
 SunnyMenu.validYBorder = 120
 SunnyMenu.cancellingFadeDur = 0.3
 SunnyMenu.cancellingOpacity = 64
+SunnyMenu.mapMoveRegionWidth = 150
 
-function SunnyMenu.create(self, images, callback)
+function SunnyMenu.create(self, images, movemap, callback)
     local size = cc.Director:getInstance():getVisibleSize()
     local node = cc.Node:create()
     local menu = cc.Menu:create()
@@ -61,6 +62,15 @@ function SunnyMenu.create(self, images, callback)
           or (p.x - size.width)*(p.x - size.width) + p.y*p.y < main_r2 * 4
     end
     local isInCancelRegionNow = false
+    local isMovingMap = function(p)
+        return not isCancelling(p) and (p.x < SunnyMenu.mapMoveRegionWidth
+          or size.width - p.x < SunnyMenu.mapMoveRegionWidth)
+    end
+    local isInMoveMapRegionNow = false
+    local isGoingLeft = false
+    local movemap_call = function(dt) movemap(isGoingLeft, dt) end
+    local scheduler = newScheduler()
+    local moveMapEntry = 0
     
     local cancelLayer = cc.Layer:create()
     node:addChild(cancelLayer)
@@ -101,6 +111,14 @@ function SunnyMenu.create(self, images, callback)
                     SunnyMenu.cancellingFadeDur, 255))
                 isInCancelRegionNow = false
             end
+            if isMovingMap(p) and not isInMoveMapRegionNow then
+                isGoingLeft = p.x < SunnyMenu.mapMoveRegionWidth
+                moveMapEntry = scheduler:scheduleScriptFunc(movemap_call, 0, false)
+                isInMoveMapRegionNow = true
+            elseif not isMovingMap(p) and isInMoveMapRegionNow then
+                scheduler:unscheduleScriptEntry(moveMapEntry)
+                isInMoveMapRegionNow = false
+            end
         end
     end
 
@@ -110,7 +128,10 @@ function SunnyMenu.create(self, images, callback)
         if dragger then
             -- I've got the mo-oo-oo-oo-oo-oo-oo-oo-ooves like 'dragger'!!
             if not isCancelling(p) then
-                callback(selectedIdx, node:convertTouchToNodeSpace(touch))
+                if isInMoveMapRegionNow then
+                    scheduler:unscheduleScriptEntry(moveMapEntry)
+                end
+                callback(selectedIdx, p)
             end
             dragger:removeFromParent()
             dragger = nil
@@ -146,6 +167,8 @@ function SunnyMenu.create(self, images, callback)
         items[i]:setCascadeOpacityEnabled(true)
         node:addChild(items[i])
     end
+
+    node.finalize = function() stopScheduler(scheduler) end
     
     return node
 end
