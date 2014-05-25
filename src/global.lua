@@ -3,7 +3,8 @@ require 'Cocos2d'
 RES = {
     --http://stackoverflow.com/questions/12443508/possible-to-use-an-ofl-font-in-a-gpl-project
     GLOBAL_FONT = 'res/fonts/Signika-Bold.ttf',
-    GLOBAL_FONT_B = 'res/fonts/Signika-Regular.ttf'
+    GLOBAL_FONT_B = 'res/fonts/Signika-Regular.ttf',
+    GLOBAL_CHN_FONT = 'res/fonts/wqy-microhei.ttc'
 }
 
 AMPERE = {
@@ -33,10 +34,12 @@ function globalImageRect(frameName)
     return cc.SpriteFrameCache:getInstance():getSpriteFrame(frameName):getRect()
 end
 
-function globalTTFConfig(fontSize, isBold)
+function globalTTFConfig(fontSize, isBold, isCHN)
     isBold = isBold or false
+    isCHN = isCHN or false
     local ttfConfig = {}
-    if isBold then ttfConfig.fontFilePath = RES.GLOBAL_FONT
+    if isCHN then ttfConfig.fontFilePath = RES.GLOBAL_CHN_FONT
+    elseif isBold then ttfConfig.fontFilePath = RES.GLOBAL_FONT
     else ttfConfig.fontFilePath = RES.GLOBAL_FONT_B end
     ttfConfig.fontSize = fontSize
     ttfConfig.glyphs = cc.GLYPHCOLLECTION_DYNAMIC
@@ -48,6 +51,11 @@ end
 function globalLabel(text, fontSize, isBold)
     return cc.Label:createWithTTF(
         globalTTFConfig(fontSize, isBold), text)
+end
+
+function globalCHNLabel(text, fontSize)
+    return cc.Label:createWithTTF(
+        globalTTFConfig(fontSize, false, true), text)
 end
 
 -- http://stackoverflow.com/questions/640642/how-do-you-copy-a-lua-table-by-value
