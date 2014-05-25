@@ -158,19 +158,22 @@ function GameOverScene.create(self, wave, score, energy, balloon)
         local rankLabel = globalLabel('Loading...', 48)
         rankLabel:setPosition(cc.p(size.width / 2, size.height * 0.3))
         scene:addChild(rankLabel)
-        scene:runAction(cc.Sequence:create(
-            cc.DelayTime:create(0),
-            cc.CallFunc:create(function()
+        local entry = 0
         local s = string.format(
             'http://cg-u2.cn.gp/su/submit_score.php?name=%s&machine=%s&wave=%d&score=%d',
             'LSQ', 'machine', wave,
             (score + energy * GameOverScene.energyConvertRate) * (1 + balloon / 100))
         downloadFile(s, '1.txt')
+        cclog('send request ok, waiting')
+        entry = scene:getScheduler():scheduleScriptFunc(function()
+        --print(updaterIsFinished())
+        if not updaterIsFinished() then return end
+        scene:getScheduler():unscheduleScriptEntry(entry)
         local f = io.open('1.txt', 'r')
         local rank, tot = f:read('*number', '*number')
         f:close()
         rankLabel:setString(string.format('#%d out of %d players', rank, tot))
-        end)))
+        end, 1, false)
     end
 
     return scene

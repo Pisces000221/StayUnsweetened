@@ -83,12 +83,31 @@ function Leaderboard.create(self, anchor, pos, callback)
             lines[i]:clear()
             lines[i]:drawSegment(centre,
                 cc.p((segmentRightmostX - centre.x) * tot_dt / 1 + centre.x, centre.y),
-                Leaderboard.circleRadius * 0.618, cc.c4f(0, 0, 0, 0.7))
+                Leaderboard.circleRadius * 0.809, cc.c4f(0, 0, 0, 0.7))
         end, 0, false)
         scene:addChild(lines[i], 61)
+        lines[i].label = globalLabel('', Leaderboard.circleRadius * 1.618)
+        lines[i].label:setPosition(cc.p(centre.x + Leaderboard.circleRadius * 3, centre.y))
+        lines[i]:addChild(lines[i].label)
     end
     circles:runAction(cc.EaseElasticOut:create(
         cc.MoveBy:create(1.5, cc.p(Leaderboard.circleMoveX, 0)), 0.8))
+
+    getHighScores = function(start_rank)
+        local entry = 0
+        downloadFile('http://cg-u2.cn.gp/su/get_highscore.php', '2.txt')
+        entry = scene:getScheduler():scheduleScriptFunc(function()
+            if not updaterIsFinished() then return end
+            scene:getScheduler():unscheduleScriptEntry(entry)
+            local r = dofile('2.txt')
+            cclogtable(r)
+            for i = 1, 10 do
+                lines[i].label:setString(r[i].name)
+                lines[i].label:runAction(cc.FadeIn:create(0.4))
+            end
+        end, 1, false)
+    end
+    getHighScores(1)
 
     return scene
 end
