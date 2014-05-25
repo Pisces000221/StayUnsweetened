@@ -34,7 +34,7 @@ local function main()
     -- load sprite frames
     cc.SpriteFrameCache:getInstance():addSpriteFrames('ss.plist')
     -- run
-    local scene = Leaderboard:create()
+    local scene = StartupScene:create()
 
     if cc.Director:getInstance():getRunningScene() then
         cc.Director:getInstance():replaceScene(scene)
