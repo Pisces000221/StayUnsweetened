@@ -4,6 +4,13 @@ require 'src/widgets/BackgroundRepeater'
 require 'src/scenes/StartupScene'
 
 Leaderboard = {}
+Leaderboard.circleRadius = 30
+Leaderboard.circleMoveX = 60
+Leaderboard.medalColour = {
+    [1] = cc.c4f(1, 1, 0.3, 1), [2] = cc.c4f(0.7, 0.7, 0.7, 1),
+    [3] = cc.c4f(0.9, 0.6, 0.1, 1) }
+Leaderboard.numColour = {
+    [1] = cc.c3b(0, 0, 0), [2] = cc.c3b(0, 0, 0), [3] = cc.c3b(0, 0, 0) }
 
 function Leaderboard.create(self, anchor, pos, callback)
     local scene = cc.Scene:create()
@@ -40,6 +47,48 @@ function Leaderboard.create(self, anchor, pos, callback)
     titleLabel:setAnchorPoint(cc.p(0.5, 1))
     titleLabel:setPosition(cc.p(size.width / 2, size.height))
     scene:addChild(titleLabel)
+
+    local circles = cc.DrawNode:create()
+    circles:setPositionX(-Leaderboard.circleMoveX)
+    scene:addChild(circles, 62)
+    local lines = {}
+    local segmentRightmostX = size.width - Leaderboard.circleRadius * 1.618
+    for i = 1, 10 do
+        local deltaX = 0
+        if i % 2 == 0 then deltaX = 18 end
+        local centre = cc.p(Leaderboard.circleRadius * 1.5 + deltaX,
+            (size.height - 64) / 11 * (11 - i))
+        local mcolour = cc.c4f(0.4, 0.4, 0.4, 1)
+        local ncolour = cc.c3b(255, 255, 255)
+        if i <= #Leaderboard.medalColour then
+            mcolour = Leaderboard.medalColour[i]
+            ncolour = Leaderboard.numColour[i]
+        end
+        circles:drawDot(centre, Leaderboard.circleRadius, mcolour)
+        local num = globalLabel(tostring(i), Leaderboard.circleRadius * 1.618)
+        num:setPosition(centre)
+        num:setColor(ncolour)
+        circles:addChild(num)
+        -- draw lines
+        lines[i] = cc.DrawNode:create()
+        local tot_dt = -0.1 * i
+        local cur_i = i
+        lines[i].entry = scene:getScheduler():scheduleScriptFunc(function(dt)
+            tot_dt = tot_dt + dt
+            if tot_dt <= 0 then return
+            elseif tot_dt >= 1 then
+                tot_dt = 1
+                scene:getScheduler():unscheduleScriptEntry(lines[i].entry)
+            end
+            lines[i]:clear()
+            lines[i]:drawSegment(centre,
+                cc.p((segmentRightmostX - centre.x) * tot_dt / 1 + centre.x, centre.y),
+                Leaderboard.circleRadius * 0.618, cc.c4f(0, 0, 0, 0.7))
+        end, 0, false)
+        scene:addChild(lines[i], 61)
+    end
+    circles:runAction(cc.EaseElasticOut:create(
+        cc.MoveBy:create(1.5, cc.p(Leaderboard.circleMoveX, 0)), 0.8))
 
     return scene
 end
