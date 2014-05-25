@@ -11,6 +11,7 @@ PROPS['cloud'] = {
     lifetime = 25,
     initialForce = { [FORCE_HEAT] = 0, [FORCE_FLOOD] = 350 },
     initialRadius = nil,
+    destroyOnFinish = false,
     create = function(self, isGoingLeft)
         if self.initialRadius == nil then
             self.initialRadius = globalImageWidth(self.bodySpriteFrame)

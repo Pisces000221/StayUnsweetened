@@ -391,11 +391,15 @@ function Gameplay.boot(self, parent, gameOverCallback)
             i = i + 1
         end
         i = 1
-        while i < #props do
+        while i <= #props do
             local pu = props[i].UNIT
             pu:update(dt)
             if pu.force[FORCE_HEAT] == 0 and pu.force[FORCE_FLOOD] == 0 then
-                finished_props:append(props[i])
+                if pu.destroyOnFinish then
+                    props[i]:destroy()
+                else
+                    finished_props:append(props[i])
+                end
                 props:remove(i)
                 i = i - 1
             end
@@ -409,6 +413,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
     construct = SunnyMenu:create(
         Gameplay.constructionOptions,
         function(left, dt)
+            if zoomer.zoomed then return end
             local deltaX = dt * Gameplay.scrollMoveSpeed
             if not left then deltaX = -deltaX end
             local px1 = scroll:getPositionX() + deltaX

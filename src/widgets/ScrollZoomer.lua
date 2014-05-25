@@ -19,12 +19,12 @@ function ScrollZoomer.create(self, scroll, anchorY, goCallback, comeCallback)
     local INFP = cc.p(-self.doubleTapMaxDist, -self.doubleTapMaxDist)
     local lastTime = -self.doubleTapMaxTime
     local lastPos = INFP
-    local zoomed = false
+    layer.zoomed = false
     local needZoom = false
     local function t_began(touch, event)
         local location = touch:getLocation()
-        if zoomed then
-            zoomed = false
+        if layer.zoomed then
+            layer.zoomed = false
             local px = ss.width * location.x / size.width - size.width / 2
             scroll:stopAllActions()
             scroll:runAction(cc.EaseSineInOut:create(cc.Spawn:create(
@@ -61,7 +61,7 @@ function ScrollZoomer.create(self, scroll, anchorY, goCallback, comeCallback)
                     cc.p(-(ss.width - size.width) / 2, anchorY * 2 - size.height / 2))
             )))
             if goCallback then goCallback() end
-            zoomed = true
+            layer.zoomed = true
         end
     end
 

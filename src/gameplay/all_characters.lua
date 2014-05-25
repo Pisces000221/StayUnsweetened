@@ -50,6 +50,7 @@ PROPS.create = function(name)
     ret.UNIT.initialForce = table.shallow_copy(PROPS[name].initialForce)
     ret.UNIT.force = table.shallow_copy(PROPS[name].initialForce)
     ret.UNIT.initialRadius = PROPS[name].initialRadius
+    ret.UNIT.destroyOnFinish = PROPS[name].destroyOnFinish
     ret.UNIT.radius = PROPS[name].initialRadius
     ret.UNIT.update = PROPS[name].update
     ret.UNIT.getForceForPosition = PROPS[name].getForceForPosition

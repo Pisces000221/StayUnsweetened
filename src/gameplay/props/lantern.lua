@@ -11,6 +11,7 @@ PROPS['lantern'] = {
     velocity = 132,
     initialForce = { [FORCE_HEAT] = 280, [FORCE_FLOOD] = 0 },
     initialRadius = 330,
+    destroyOnFinish = true,
     create = function(self, isGoingLeft)
         isGoingLeft = isGoingLeft or false
         if math.random(2) == 1 then isGoingLeft = not isGoingLeft end
@@ -52,7 +53,9 @@ PROPS['lantern'] = {
         else return rate * self.force[ftype] end
     end,
     destroy = function(self)
-        self:runAction(cc.FadeOut:create(1))
+        self:runAction(cc.Sequence:create(
+            cc.FadeOut:create(1),
+            cc.RemoveSelf:create()))
         self:getChildByTag(fireTag):runAction(cc.ScaleTo:create(1, 0))
         return 1
     end

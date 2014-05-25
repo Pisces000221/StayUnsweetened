@@ -11,6 +11,7 @@ PROPS['torch'] = {
     lifetime = 30,
     initialForce = { [FORCE_HEAT] = 350, [FORCE_FLOOD] = 0 },
     initialRadius = 400,
+    destroyOnFinish = false,
     create = function(self, isGoingLeft)
         local ret = globalSprite(self.bodySpriteFrame)
         ret:setAnchorPoint(cc.p(0.5, 0))
