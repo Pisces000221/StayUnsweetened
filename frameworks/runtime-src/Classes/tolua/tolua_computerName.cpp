@@ -25,7 +25,7 @@ int tolua_getComputerName(lua_State *L)
     return 1;
 }
 
-TOLUA_API int tolua_SchedulerEx_open(lua_State *L)
+TOLUA_API int tolua_computerName_open(lua_State *L)
 {
     tolua_open(L);
     tolua_module(L, NULL, 0);
