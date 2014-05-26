@@ -6,6 +6,7 @@ TOLUA_API int tolua_MoveRotate90_open(lua_State *L);
 TOLUA_API int tolua_SchedulerEx_open(lua_State *L);
 TOLUA_API int tolua_PuritySprite_open(lua_State *L);
 TOLUA_API int tolua_updater_open(lua_State *L);
+TOLUA_API int tolua_computerName_open(lua_State *L);
 
 void tolua_bindAllManual(lua_State *L)
 {
@@ -14,6 +15,7 @@ void tolua_bindAllManual(lua_State *L)
     tolua_SchedulerEx_open(L);
     tolua_PuritySprite_open(L);
     tolua_updater_open(L);
+    tolua_computerName_open(L);
 }
 
 #endif
