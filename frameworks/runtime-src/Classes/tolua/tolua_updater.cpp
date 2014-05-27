@@ -41,6 +41,12 @@ int tolua_uploadFile(lua_State *L)
     return 1;
 }
 
+int tolua_updater_isFinished(lua_State *L)
+{
+    tolua_pushboolean(L, updater::isFinished() ? 1 : 0);
+    return 1;
+}
+
 TOLUA_API int tolua_updater_open(lua_State *L)
 {
     tolua_open(L);
@@ -48,6 +54,7 @@ TOLUA_API int tolua_updater_open(lua_State *L)
     tolua_beginmodule(L, NULL);
         tolua_function(L, "downloadFile", tolua_downloadFile);
         tolua_function(L, "uploadFile", tolua_uploadFile);
+        tolua_function(L, "updaterIsFinished", tolua_updater_isFinished);
     tolua_endmodule(L);
     return 1;
 }

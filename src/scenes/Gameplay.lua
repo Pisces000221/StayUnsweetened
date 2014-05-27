@@ -218,7 +218,7 @@ function Gameplay.boot(self, parent, gameOverCallback)
                 cc.MoveBy:create(1, cc.p(dx, 0)),
                 cc.RemoveSelf:create()))
         end
-        gameOverCallback(scoreBall.score, energyBall.score, _G['BALLOON_BONUS'])
+        gameOverCallback(curWave, scoreBall.score, energyBall.score, _G['BALLOON_BONUS'])
         cclog('Game Over')
     end
     

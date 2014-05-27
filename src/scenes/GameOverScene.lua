@@ -12,11 +12,12 @@ GameOverScene.balloonConvertDur = 1
 
 GameOverScene.energyConvertRate = 160
 
-function GameOverScene.create(self, score, energy, balloon)
+function GameOverScene.create(self, wave, score, energy, balloon)
     local scene = cc.Scene:create()
     local size = cc.Director:getInstance():getVisibleSize()
     local energyConvertDur = energy / GameOverScene.energyConvertSpeed
     local convertEnergyEntry, convertBalloonEntry = 0, 0
+    local submitScore
 
     -- display background
     local texture = cc.RenderTexture:create(size.width, size.height, cc.TEXTURE2_D_PIXEL_FORMAT_RGB_A8888)
@@ -123,6 +124,7 @@ function GameOverScene.create(self, score, energy, balloon)
                 if total_dt >= GameOverScene.balloonConvertDur then
                     total_dt = GameOverScene.balloonConvertDur
                     scene:getScheduler():unscheduleScriptEntry(convertBalloonEntry)
+                    submitScore()
                 end
                 score_s:setNumber((score + energy * GameOverScene.energyConvertRate)
                     * (1 + total_dt / GameOverScene.balloonConvertDur * balloon / 100))
@@ -151,6 +153,28 @@ function GameOverScene.create(self, score, energy, balloon)
     local menu = cc.Menu:create(close_item)
     menu:setPosition(cc.p(0, 0))
     scene:addChild(menu)
+
+    submitScore = function()
+        local rankLabel = globalLabel('Loading...', 48)
+        rankLabel:setPosition(cc.p(size.width / 2, size.height * 0.3))
+        scene:addChild(rankLabel)
+        local entry = 0
+        local s = string.format(
+            'http://cg-u2.cn.gp/su/submit_score.php?name=%s&machine=%s&wave=%d&score=%d',
+            'LSQ', 'machine', wave,
+            (score + energy * GameOverScene.energyConvertRate) * (1 + balloon / 100))
+        downloadFile(s, '1.txt')
+        cclog('send request ok, waiting')
+        entry = scene:getScheduler():scheduleScriptFunc(function()
+        --print(updaterIsFinished())
+        if not updaterIsFinished() then return end
+        scene:getScheduler():unscheduleScriptEntry(entry)
+        local f = io.open('1.txt', 'r')
+        local rank, tot = f:read('*number', '*number')
+        f:close()
+        rankLabel:setString(string.format('#%d out of %d players', rank, tot))
+        end, 1, false)
+    end
 
     return scene
 end
