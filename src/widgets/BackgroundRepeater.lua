@@ -31,6 +31,5 @@ function BackgroundRepeater.create(self, width, frame, anchor, delta, scale)
         curp = curp + frameWidth + getDelta()
         ct = ct + 1
     end
-    layer:setContentSize(cc.size(curp + frameWidth, size.height))
     return layer
 end

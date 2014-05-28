@@ -5,7 +5,6 @@ require 'src/scenes/MYTEST/MYTEST1'
 require 'src/scenes/MYTEST/MYTEST2'
 require 'src/scenes/MYTEST/MYTEST3'
 require 'src/scenes/StartupScene'
-require 'src/scenes/Leaderboard'
 
 local function main()
     -- avoid memory leak
@@ -34,7 +33,7 @@ local function main()
     -- load sprite frames
     cc.SpriteFrameCache:getInstance():addSpriteFrames('ss.plist')
     -- run
-    local scene = Leaderboard:create()
+    local scene = StartupScene:create()
 
     if cc.Director:getInstance():getRunningScene() then
         cc.Director:getInstance():replaceScene(scene)

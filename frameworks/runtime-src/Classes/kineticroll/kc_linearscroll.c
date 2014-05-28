@@ -98,9 +98,9 @@ float kc_getpos(kc_linearscroll *context)
 
 void kc_inittouchdata(kc_linearscroll *context, float pos)
 {
-	int i;
     struct timeb now;
     ftime(&now);
+    int i;
     for (i = 0; i < TOUCHES_RECORDED; i++) {
         context->_ttime[i] = now;
         context->_tpos[i] = pos;
@@ -226,7 +226,6 @@ int kc_activate(kc_linearscroll *context, int index, float arg)
             context->_tn[TN_TOTAL] += arg;
             if (context->_state.motion == FREE_SCROLL) {
                 float t = context->_tn[TN_TOTAL];
-				float St = (context->_vn[FREE_SCROLL] - 0.5 * NORMAL_ACCEL * t) * t;
                 unsigned goon = FALSE;
                 if (context->_tn[TN_TOTAL] >= context->_tn[FREE_SCROLL]) {
                     context->_state.motion = HIT_BORDER_AWAY;
@@ -237,6 +236,7 @@ int kc_activate(kc_linearscroll *context, int index, float arg)
                         tottime(context->_vn[HIT_BORDER_AWAY], BOUNCEAWAY_DECEL, BEYOND_DISTANCE);
                     goon = TRUE;
                 }
+                float St = (context->_vn[FREE_SCROLL] - 0.5 * NORMAL_ACCEL * t) * t;
                 if (context->_state.velocity == BORDER_DOWN_LEFT)
                     /* Negative initial velocity (v0). */
                     kc_setpos(context, context->_dn[FREE_SCROLL] - St);
@@ -288,10 +288,10 @@ int kc_activate(kc_linearscroll *context, int index, float arg)
                         + t*context->_vn[HIT_BORDER_BEYOND]
                         * (1 - 0.5 * t / BEYOND_DUR));
                 if (goon) {
-					float bd = beyond_dist(
+                    context->_dn[HIT_BORDER_BACK_ACC] = kc_getpos(context);
+                    float bd = beyond_dist(
                         context->_contentsize - context->_visiblesize,
                         context->_dn[HIT_BORDER_BACK_ACC]);
-                    context->_dn[HIT_BORDER_BACK_ACC] = kc_getpos(context);
                     context->_tn[HIT_BORDER_BACK_ACC] = /* See below */
                     context->_tn[HIT_BORDER_BACK_DEC] = BOUNCEBACK_DUR;
                     context->_vn[HIT_BORDER_BACK_ACC] = 0;
@@ -335,12 +335,12 @@ int kc_activate(kc_linearscroll *context, int index, float arg)
                         (1 - 0.5 * t / context->_tn[HIT_BORDER_BACK_DEC]));
             } else if (context->_state.motion == RELEASED_OUTSIDE) {
                 float t = context->_tn[TN_TOTAL];
-				float St = (context->_vn[RELEASED_OUTSIDE] - 0.5 * RELEASEOUT_DECEL * t) * t;
                 if (context->_tn[TN_TOTAL] >= context->_tn[RELEASED_OUTSIDE]) {
                     kc_stoprefresh(context);
                     t = context->_tn[RELEASED_OUTSIDE];
                     context->_tn[TN_TOTAL] = 0;
                 }
+                float St = (context->_vn[RELEASED_OUTSIDE] - 0.5 * RELEASEOUT_DECEL * t) * t;
                 if (context->_state.border == BORDER_DOWN_LEFT)
                     kc_setpos(context, context->_dn[RELEASED_OUTSIDE] - St);
                 else

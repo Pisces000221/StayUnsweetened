@@ -19,8 +19,6 @@ namespace updater {
     void uploadFile(std::string localFile, std::string remoteServer,
         std::string onlineFile, std::string username, std::string password);
     void checkUpdate(std::string rootdir, std::function<void(float)> progressCallback = nullptr);
-
-    bool isFinished();
 }
 
 #endif

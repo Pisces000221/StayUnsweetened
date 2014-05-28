@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <map>
-#include <thread>
 #include <cstdio>
 #include <cstdlib>
 using namespace std;
@@ -11,13 +10,11 @@ using namespace std;
 // The way to download GitHub files are from
 //https://raw.githubusercontent.com/bagder/curl/master/docs/examples/getinmemory.c
 #include "cocos2d.h"
-//#define WINDOWS
 
 #ifdef WINDOWS
     #include <direct.h>
     #define RUNNING_DIR _getcwd
     #include <windows.h>
-	#include <sys/stat.h>
 #else
     #include <unistd.h>
     #define RUNNING_DIR getcwd
@@ -30,9 +27,6 @@ const int DIR_REVMARK = -1;
 //https://help.github.com/articles/why-did-i-get-redirected-to-this-page
 const string SERVER_ROOT
     = "https://raw.githubusercontent.com/Pisces000221/StayUnsweetened/master";
-
-bool _isFinished = false;
-bool isFinished() { return _isFinished; }
 
 struct MemoryStruct {
   char *memory;
@@ -94,8 +88,6 @@ void removeFile(string filename)
 
 void downloadFile(string onlineFile, string localFile)
 {
-  _isFinished = false;
-  std::thread t([=](){
   CCLOG("Downloading %s to %s", onlineFile.c_str(), localFile.c_str());
   CURL *curl_handle;
   CURLcode res;
@@ -121,10 +113,6 @@ void downloadFile(string onlineFile, string localFile)
 
   if(chunk.memory) free(chunk.memory);
   curl_global_cleanup();
-  _isFinished = true;
-  });
-  //http://stackoverflow.com/questions/13999432/stdthread-terminate-called-without-an-active-exception-dont-want-to-joi
- t.detach();
 }
 
 void checkUpdate(string rootdir, std::function<void(float)> progressCallback)
@@ -170,8 +158,6 @@ static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 void uploadFile(string localFile, string remoteServer, string onlineFile,
     string username, string password)
 {
-  _isFinished = false;
-  std::thread t([=](){
   CURL *curl;
   CURLcode res;
   FILE *hd_src;
@@ -205,9 +191,6 @@ void uploadFile(string localFile, string remoteServer, string onlineFile,
   }
   fclose(hd_src);
   curl_global_cleanup();
-  _isFinished = true;
- });
- t.detach();
 }
 
 }
