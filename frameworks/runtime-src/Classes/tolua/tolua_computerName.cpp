@@ -9,19 +9,22 @@ extern "C" {
 #include "tolua_fix.h"
 #include "CCScheduler.h"
 #include "CCDirector.h"
+#include "atlbase.h"
+#include "atlstr.h"
 
 std::string computerName()
 {
 	long unsigned n;
 	char s[256];
-	GetComputerName(s, &n);
+	GetComputerName(CA2W(s), &n);
+	//std::string ret = s;
 	std::string ret(s);
 	return ret;
 }
 
 int tolua_getComputerName(lua_State *L)
 {
-    lua_pushstring(L, computerName().c_str()));
+    lua_pushstring(L, computerName().c_str());
     return 1;
 }
 

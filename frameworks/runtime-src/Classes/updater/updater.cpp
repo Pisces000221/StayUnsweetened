@@ -11,11 +11,13 @@ using namespace std;
 // The way to download GitHub files are from
 //https://raw.githubusercontent.com/bagder/curl/master/docs/examples/getinmemory.c
 #include "cocos2d.h"
+//#define WINDOWS
 
 #ifdef WINDOWS
     #include <direct.h>
     #define RUNNING_DIR _getcwd
     #include <windows.h>
+	#include <sys/stat.h>
 #else
     #include <unistd.h>
     #define RUNNING_DIR getcwd
