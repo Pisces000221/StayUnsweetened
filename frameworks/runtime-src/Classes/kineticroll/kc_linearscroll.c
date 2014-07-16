@@ -10,7 +10,7 @@
     #define TRUE 1
 #endif
 #ifndef FALSE
-    #define FALSE 1
+    #define FALSE 0
 #endif
 
 float timeb_diff(struct timeb t1, struct timeb t2)
