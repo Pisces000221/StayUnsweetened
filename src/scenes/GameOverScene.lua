@@ -15,6 +15,8 @@ GameOverScene.hiscoreCatchUpDur = 1
 
 GameOverScene.energyConvertRate = 160
 
+GameOverScene.tagsToRemoveOnClose = { 1238764, 233333 }
+
 function GameOverScene.create(self, score, energy, balloon)
     local scene = cc.Scene:create()
     local size = cc.Director:getInstance():getVisibleSize()
@@ -177,6 +179,22 @@ function GameOverScene.create(self, score, energy, balloon)
                     total_dt = GameOverScene.hiscoreCatchUpDur
                     scene:getScheduler():unscheduleScriptEntry(hiscoreCatchUpEntry)
                     data_save.setHighScore(score)
+                    -- Run 'new record' animation
+                    local cheers = cc.ParticleFireworks:create()
+                    cheers:setPosition(cc.p(size.width / 2, 0))
+                    cheers:setScale(3)
+                    cheers.out_type = 'scale'
+                    scene:addChild(cheers, 100, GameOverScene.tagsToRemoveOnClose[1])
+                    local new_rec_label = globalLabel('New record!!', 48, true)
+                    new_rec_label:setAnchorPoint(cc.p(1, 0.1))
+                    new_rec_label:setPosition(hiscore_s:getPosition())
+                    new_rec_label:setRotation(10)
+                    new_rec_label:setColor(cc.c3b(255, 128, 0))
+                    new_rec_label:setScale(0)
+                    new_rec_label.out_type = 'fade'
+                    scene:addChild(new_rec_label, 99, GameOverScene.tagsToRemoveOnClose[2])
+                    new_rec_label:runAction(cc.EaseElasticOut:create(
+                        cc.ScaleTo:create(1, 1), 1.5))
                 end
                 hiscore_s:setNumber((score - hiscore) * total_dt / GameOverScene.hiscoreCatchUpDur + hiscore)
             end, 0, false)
@@ -188,6 +206,14 @@ function GameOverScene.create(self, score, energy, balloon)
         score_t:runAction(cc.FadeOut:create(0.4))
         hiscore_s:runAction(cc.Hide:create())
         hiscore_t:runAction(cc.FadeOut:create(0.4))
+        for i = 1, #GameOverScene.tagsToRemoveOnClose do
+            local a = scene:getChildByTag(GameOverScene.tagsToRemoveOnClose[i])
+            if a and a.out_type == 'fade' then
+                a:runAction(cc.FadeOut:create(0.4))
+            elseif a and a.out_type == 'scale' then
+                a:runAction(cc.ScaleTo:create(0.2, 0))
+            end
+        end
         bgSprite:runAction(cc.TintTo:create(
             GameOverScene.backgroundTintDur, 255, 255, 255))
         scene:runAction(cc.Sequence:create(
