@@ -1,5 +1,6 @@
 require 'Cocos2d'
 require 'src/global'
+require 'src/data_save'
 require 'src/widgets/ScoreLabel'
 require 'src/scenes/Gameplay'
 
@@ -9,6 +10,8 @@ GameOverScene.backgroundTintWhite = 96
 GameOverScene.actionInterval = 0.3
 GameOverScene.energyConvertSpeed = 100
 GameOverScene.balloonConvertDur = 1
+GameOverScene.hiscoreCatchUpDelay = 0.6
+GameOverScene.hiscoreCatchUpDur = 1
 
 GameOverScene.energyConvertRate = 160
 
@@ -16,7 +19,7 @@ function GameOverScene.create(self, score, energy, balloon)
     local scene = cc.Scene:create()
     local size = cc.Director:getInstance():getVisibleSize()
     local energyConvertDur = energy / GameOverScene.energyConvertSpeed
-    local convertEnergyEntry, convertBalloonEntry = 0, 0
+    local convertEnergyEntry, convertBalloonEntry, hiscoreCatchUpEntry = 0, 0, 0
 
     -- display background
     local texture = cc.RenderTexture:create(size.width, size.height, cc.TEXTURE2_D_PIXEL_FORMAT_RGB_A8888)
@@ -82,6 +85,10 @@ function GameOverScene.create(self, score, energy, balloon)
                 if total_dt >= energyConvertDur then
                     total_dt = energyConvertDur
                     scene:getScheduler():unscheduleScriptEntry(convertEnergyEntry)
+                    score = score + energy * GameOverScene.energyConvertRate
+                    score_s:setNumber(score)
+                    energy_s:setNumber(0)
+                    return
                 end
                 score_s:setNumber(score
                     + total_dt / energyConvertDur * energy * GameOverScene.energyConvertRate)
@@ -123,18 +130,64 @@ function GameOverScene.create(self, score, energy, balloon)
                 if total_dt >= GameOverScene.balloonConvertDur then
                     total_dt = GameOverScene.balloonConvertDur
                     scene:getScheduler():unscheduleScriptEntry(convertBalloonEntry)
+                    score = score * (1 + balloon / 100)
+                    cclog('score = %d', score)
+                    score_s:setNumber(score)
+                    balloon_s:setString('+ 0%')
+                    return
                 end
-                score_s:setNumber((score + energy * GameOverScene.energyConvertRate)
-                    * (1 + total_dt / GameOverScene.balloonConvertDur * balloon / 100))
+                score_s:setNumber(score * (1 + total_dt / GameOverScene.balloonConvertDur * balloon / 100))
                 balloon_s:setString(string.format('+ %d%%',
                     (1 - total_dt / GameOverScene.balloonConvertDur) * balloon))
             end, 0, false)
     end
     balloon2score()
 
+    -- Load high score
+    local hiscore = data_save.getHighScore()
+    local hiscore_t = globalLabel('Best: ', 68, true)
+    hiscore_t:setAnchorPoint(cc.p(0, 0.5))
+    hiscore_t:setPosition(cc.p(24, size.height * 0.4))
+    hiscore_t:setOpacity(0)
+    hiscore_t:runAction(cc.Sequence:create(
+        cc.DelayTime:create(energyConvertDur + GameOverScene.balloonConvertDur
+          + GameOverScene.backgroundTintDur + GameOverScene.actionInterval * 9 + 1.6),
+        cc.FadeIn:create(GameOverScene.actionInterval)))
+    scene:addChild(hiscore_t)
+    local hiscore_s = ScoreLabel:create(84, Gameplay.scoreLabelMaxDigits)
+    hiscore_s:setNumber(hiscore)
+    hiscore_s:setAnchorPoint(cc.p(1, 0.5))
+    hiscore_s:setPosition(cc.p(size.width - 36, size.height * 0.4))
+    hiscore_s:setVisible(false)
+    hiscore_s:runAction(cc.Sequence:create(
+        cc.DelayTime:create(energyConvertDur + GameOverScene.balloonConvertDur
+          + GameOverScene.backgroundTintDur + GameOverScene.actionInterval * 11 + 1.6),
+        cc.Show:create()))
+    scene:addChild(hiscore_s)
+
+    local show_hiscore = function()
+        local total_dt = -(energyConvertDur + GameOverScene.balloonConvertDur + GameOverScene.hiscoreCatchUpDur
+            + GameOverScene.actionInterval * 10 + 1.6 + GameOverScene.hiscoreCatchUpDelay)
+        hiscoreCatchUpEntry = scene:getScheduler():scheduleScriptFunc(
+            function(dt)
+                total_dt = total_dt + dt
+                if total_dt < 0 then return end
+                if hiscore >= score then scene:getScheduler():unscheduleScriptEntry(hiscoreCatchUpEntry); return end
+                if total_dt >= GameOverScene.hiscoreCatchUpDur then
+                    total_dt = GameOverScene.hiscoreCatchUpDur
+                    scene:getScheduler():unscheduleScriptEntry(hiscoreCatchUpEntry)
+                    data_save.setHighScore(score)
+                end
+                hiscore_s:setNumber((score - hiscore) * total_dt / GameOverScene.hiscoreCatchUpDur + hiscore)
+            end, 0, false)
+    end
+    show_hiscore()
+
     close = function()
         score_s:runAction(cc.Hide:create())
         score_t:runAction(cc.FadeOut:create(0.4))
+        hiscore_s:runAction(cc.Hide:create())
+        hiscore_t:runAction(cc.FadeOut:create(0.4))
         bgSprite:runAction(cc.TintTo:create(
             GameOverScene.backgroundTintDur, 255, 255, 255))
         scene:runAction(cc.Sequence:create(
@@ -143,6 +196,7 @@ function GameOverScene.create(self, score, energy, balloon)
                 cc.Director:getInstance():popScene() end)))
         scene:getScheduler():unscheduleScriptEntry(convertEnergyEntry)
         scene:getScheduler():unscheduleScriptEntry(convertBalloonEntry)
+        scene:getScheduler():unscheduleScriptEntry(hiscoreCatchUpEntry)
     end
 
     local close_item = cc.MenuItemLabel:create(globalLabel('Close', 55))
