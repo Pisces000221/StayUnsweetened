@@ -26,7 +26,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 		glview = GLView::createWithRect("Stay Unsweetened", Rect(0, 0, 960, 640));
 		director->setOpenGLView(glview);
 	}
-    glview->setDesignResolutionSize(960, 640, ResolutionPolicy::SHOW_ALL);
+    glview->setDesignResolutionSize(960, 640, ResolutionPolicy::FIXED_WIDTH);
     director->setDisplayStats(true);
     director->setAnimationInterval(1.0 / 60);
 
