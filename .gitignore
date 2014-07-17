@@ -4,6 +4,8 @@ frameworks/runtime-src/proj.android/bin
 frameworks/runtime-src/proj.android/gen
 frameworks/runtime-src/proj.android/libs
 frameworks/runtime-src/proj.android/obj
+frameworks/runtime-src/proj.ios_mac
+frameworks/runtime-src/proj.win32
 frameworks/cocos2d-x
 linux-build
 runtime

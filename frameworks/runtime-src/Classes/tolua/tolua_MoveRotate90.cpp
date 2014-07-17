@@ -23,7 +23,7 @@ int tolua_MoveRotate90_create(lua_State *L)
         cocos2d::Point origin;
         bool isClockwise;
         ok &= luaval_to_number(L, 2, &duration);
-        ok &= luaval_to_point(L, 3, &origin);
+        ok &= luaval_to_vec2(L, 3, &origin);
         ok &= luaval_to_boolean(L, 4, &isClockwise);
         if (!ok) return 0;
         M::MoveRotate90* ret = M::MoveRotate90::create(duration, origin, isClockwise);
@@ -35,7 +35,7 @@ int tolua_MoveRotate90_create(lua_State *L)
         double duration;
         cocos2d::Point origin;
         ok &= luaval_to_number(L, 2, &duration);
-        ok &= luaval_to_point(L, 3, &origin);
+        ok &= luaval_to_vec2(L, 3, &origin);
         if (!ok) return 0;
         M::MoveRotate90* ret = M::MoveRotate90::create(duration, origin);
         object_to_luaval <M::MoveRotate90>

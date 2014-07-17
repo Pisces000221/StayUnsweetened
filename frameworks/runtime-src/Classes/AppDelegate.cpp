@@ -34,7 +34,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 	ScriptEngineManager::getInstance()->setScriptEngine(engine);
     CCLOG("Binding classes to Lua...");
     tolua_bindAllManual(engine->getLuaStack()->getLuaState());
-	engine->executeScriptFile("src/rock.lua");
+    if (engine->executeScriptFile("src/rock.lua")) return false;
 
     return true;
 }

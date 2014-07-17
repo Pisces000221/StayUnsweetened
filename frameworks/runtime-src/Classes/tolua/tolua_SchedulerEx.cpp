@@ -2,8 +2,8 @@ extern "C" {
 #include "tolua++.h"
 }
 #include "tolua_fix.h"
-#include "CCScheduler.h"
-#include "CCDirector.h"
+#include "base/CCScheduler.h"
+#include "base/CCDirector.h"
 
 int tolua_new_Scheduler(lua_State *L)
 {
