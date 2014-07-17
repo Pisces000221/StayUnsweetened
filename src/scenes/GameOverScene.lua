@@ -175,7 +175,7 @@ function GameOverScene.create(self, score, energy, balloon)
             function(dt)
                 total_dt = total_dt + dt
                 if total_dt < 0 then return end
-                --if hiscore >= score_final then scene:getScheduler():unscheduleScriptEntry(hiscoreCatchUpEntry); return end
+                if hiscore >= score_final then scene:getScheduler():unscheduleScriptEntry(hiscoreCatchUpEntry); return end
                 if total_dt >= GameOverScene.hiscoreCatchUpDur then
                     total_dt = GameOverScene.hiscoreCatchUpDur
                     scene:getScheduler():unscheduleScriptEntry(hiscoreCatchUpEntry)
