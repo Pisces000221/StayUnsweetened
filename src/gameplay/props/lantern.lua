@@ -7,9 +7,9 @@ local fireTag = 131452541
 PROPS['lantern'] = {
     charID = 1035371,
     bodySpriteFrame = 'lantern',
-    cost = 60,
+    cost = 70,
     velocity = 132,
-    initialForce = { [FORCE_HEAT] = 280, [FORCE_FLOOD] = 0 },
+    initialForce = { [FORCE_HEAT] = 480, [FORCE_FLOOD] = 0 },
     initialRadius = 330,
     destroyOnFinish = true,
     create = function(self, isGoingLeft)
